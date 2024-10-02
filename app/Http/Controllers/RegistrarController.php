@@ -8,6 +8,21 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 class RegistrarController extends Controller
 {
+    public function showKiosk()
+    {
+        return view('kiosk');
+    }
+    public function getLatestQueueNumber()
+    {
+        // Fetch the latest document request that has a queue number
+        $latestRequest = DocumentRequest::whereNotNull('queue_number')
+                                        ->orderBy('created_at', 'desc')
+                                        ->first();
+
+        return response()->json([
+            'queue_number' => $latestRequest ? $latestRequest->queue_number : 'No Queue',
+        ]);
+    }
     /**
      * Handle the document request submission.
      *
