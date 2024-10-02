@@ -30,15 +30,17 @@ class RegistrarController extends Controller
 
         // Create a new document request
         $documentRequest = DocumentRequest::create([
-            'user_id' => Auth::id(), // Assuming the user is logged in
+           // 'user_id' => Auth::id(), // If user is not logged in, you can remove this line
+            'name' => $request->name,
+            'contact' => $request->contact,
+            'email' => $request->email,
             'document_type' => $request->document_type,
+            'year_level' => $request->year_level,
             'status' => 'on_hold',
             'queue_number' => $queueNumber,
         ]);
 
-        // You can also send an email notification here if needed
-        // Mail::to($request->email)->send(new DocumentRequestSubmitted($documentRequest));
-
+        // Return a JSON response
         return response()->json([
             'message' => 'Request submitted successfully.',
             'queue_number' => $queueNumber,

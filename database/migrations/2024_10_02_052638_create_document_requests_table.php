@@ -13,13 +13,17 @@ return new class extends Migration
     {
         Schema::create('document_requests', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->string('document_type');
-            $table->string('status')->default('on_hold');
-            $table->string('queue_number')->nullable();
-            $table->timestamps();
-        
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+    $table->unsignedBigInteger('user_id')->nullable(); // Optional if user is not always logged in
+    $table->string('name');
+    $table->string('contact');
+    $table->string('email');
+    $table->string('document_type');
+    $table->string('year_level');
+    $table->string('status')->default('on_hold');
+    $table->string('queue_number')->nullable();
+    $table->timestamps();
+
+    $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

@@ -18,9 +18,13 @@ class DocumentRequest extends Model
      */
     protected $fillable = [
         'user_id',
-        'document_type',
-        'status',
-        'queue_number',
+    'name',
+    'contact',
+    'email',
+    'document_type',
+    'year_level',
+    'status',
+    'queue_number',
     ];
 
     /**
