@@ -61,4 +61,17 @@ class RegistrarController extends Controller
             'queue_number' => $queueNumber,
         ]);
     }
+    public function getWaitingList()
+    {
+        // Fetch the latest 10 queue numbers that are in 'on_hold' or 'processing' status
+        $waitingList = DocumentRequest::whereNotNull('queue_number')
+                                       ->where('status', 'on_hold')
+                                       ->orderBy('created_at', 'desc')
+                                       ->limit(10)
+                                       ->pluck('queue_number');
+
+        return response()->json([
+            'queue_numbers' => $waitingList,
+        ]);
+    }
 }

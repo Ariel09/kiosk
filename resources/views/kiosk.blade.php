@@ -53,6 +53,24 @@
             box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
+        .waiting-list {
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .waiting-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .waiting-list li {
+            background: #f1f1f1;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 1.2em;
+        }
+
         .footer-text {
             margin-top: 20px;
             font-size: 1em;
@@ -66,6 +84,12 @@
             <div class="queue-label">Current Queue Number</div>
             <div id="queueNumberDisplay" class="queue-number-display">
                 Loading...
+            </div>
+            <div class="waiting-list">
+                <h4>Waiting List</h4>
+                <ul id="waitingList">
+                    <!-- Waiting list numbers will be inserted here -->
+                </ul>
             </div>
             <div class="footer-text">Please wait for your number to be called.</div>
         </div>
@@ -84,11 +108,35 @@
                 });
         }
 
-        // Fetch the queue number every 5 seconds
-        setInterval(fetchQueueNumber, 5000);
+        // Function to fetch the waiting list from the server
+        function fetchWaitingList() {
+            axios.get('/get-waiting-list')
+                .then(response => {
+                    const waitingList = response.data.queue_numbers;
+                    const waitingListContainer = document.getElementById('waitingList');
 
-        // Fetch the queue number when the page loads
+                    // Clear the current list
+                    waitingListContainer.innerHTML = '';
+
+                    // Populate the waiting list
+                    waitingList.forEach(queueNumber => {
+                        const listItem = document.createElement('li');
+                        listItem.innerText = queueNumber;
+                        waitingListContainer.appendChild(listItem);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching waiting list:', error);
+                });
+        }
+
+        // Fetch the queue number and waiting list every 5 seconds
+        setInterval(fetchQueueNumber, 5000);
+        setInterval(fetchWaitingList, 5000);
+
+        // Fetch the queue number and waiting list when the page loads
         fetchQueueNumber();
+        fetchWaitingList();
     </script>
 </body>
 </html>

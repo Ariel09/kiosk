@@ -10,3 +10,5 @@ Route::get('/', function ()
 Route::post('/request-document', [App\Http\Controllers\RegistrarController::class, 'requestDocument']);
 Route::get('/get-latest-queue-number', [RegistrarController::class, 'getLatestQueueNumber']);
 Route::get('/kiosk-terminal', [RegistrarController::class, 'showKiosk'])->name('kiosk.terminal');
+Route::get('/get-waiting-list', [RegistrarController::class, 'getWaitingList']);
+Route::get('/get-queue-info', [RegistrarController::class, 'getQueueInfo']);
