@@ -30,9 +30,9 @@
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            z-index: 1000; /* makes it stay on top */
+            z-index: 1000;
             transition: opacity 0.5s ease, visibility 0.5s ease;
-            cursor: pointer; /* Indicate that the screen is tappable */
+            cursor: pointer; /* Make the whole overlay clickable */
         }
         #landingOverlay.hidden {
             opacity: 0;
@@ -41,13 +41,6 @@
         #landingOverlay h1 {
             font-size: 2rem;
             margin-bottom: 20px;
-        }
-        #landingOverlay button {
-            padding: 10px 20px;
-            font-size: 1.2rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
         }
         /* Card button styling */
         .card-button {
@@ -66,7 +59,6 @@
             gap: 20px;
             justify-content: center;
         }
-        /* Individual card items */
         .card-item {
             flex: 1 1 calc(33.333% - 20px);
             min-width: 200px;
@@ -81,22 +73,14 @@
         #mainContent.active {
             display: block;
         }
-        /* Date & Time Styling */
-        .date-time {
-            position: absolute;
-            bottom: 20px;
-            font-size: 1rem;
-            color: #6c757d;
-        }
     </style>
 </head>
 <body>
     <!-- Landing Overlay -->
     <div id="landingOverlay">
         <img src="{{ asset('logo.png') }}" alt="Academy Logo" style="max-width: 20%; margin-bottom: 5rem;">
-        <h1>Hello, Welcome to Saint Ignatius Academy!</h1>
-        <p>Tap the screen to proceed</p>
-        <div id="dateTime" class="date-time"></div> <!-- Date and Time Display -->
+        <h1>Hello, Welcome to the Saint Ignatius Academy!</h1>
+        <div id="continueButton">Tap the screen to proceed</div>
     </div>
 
     <!-- Main Content -->
@@ -172,9 +156,8 @@
     </div>
 
     <script>
-        // Handle "Tap to Continue"
+        // Handle tapping anywhere on the landing overlay to proceed
         document.getElementById('landingOverlay').addEventListener('click', function () {
-            // Fade out the overlay
             const overlay = document.getElementById('landingOverlay');
             overlay.classList.add('hidden');
 
@@ -216,29 +199,16 @@
                     // Display error message
                     console.error('Error:', error); // Log full error to console for debugging
                     document.getElementById('statusMessage').innerHTML =
-                        `<div class="alert alert-danger">An error occurred. Please try again later.</div>`;
+                        `<div class="alert alert-danger">An error occurred: ${error.response ? error.response.data.message : error.message}</div>`;
                 });
         });
 
-        // Function to update the current date and time
-        function updateDateTime() {
-            const now = new Date();
-            const formattedDateTime = now.toLocaleString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: 'numeric',
-                minute: 'numeric',
-                second: 'numeric',
-                hour12: true
-            });
-            document.getElementById('dateTime').textContent = formattedDateTime;
-        }
-
-        // Call updateDateTime on page load and update every second
-        updateDateTime();
-        setInterval(updateDateTime, 1000);
+        // Set CSRF token for Axios
+        axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     </script>
+
+    <!-- include Bootstrap JS for modals -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
