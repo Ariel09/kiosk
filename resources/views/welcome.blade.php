@@ -119,35 +119,37 @@
 
         // Handle form submission
         document.getElementById('documentRequestForm').addEventListener('submit', function (e) {
-            e.preventDefault(); // Prevent the default form submission
+    e.preventDefault(); // Prevent the default form submission
 
-            // Get form data
-            const formData = {
-                name: document.getElementById('name').value,
-                contact: document.getElementById('contact').value,
-                email: document.getElementById('email').value,
-                document_type: document.getElementById('document_type').value,
-                year_level: document.getElementById('year_level').value,
-            };
+    // Get form data
+    const formData = {
+        name: document.getElementById('name').value,
+        contact: document.getElementById('contact').value,
+        email: document.getElementById('email').value,
+        document_type: document.getElementById('document_type').value,
+        year_level: document.getElementById('year_level').value,
+    };
 
-            // Submit the form using Axios
-            axios.post('/request-document', formData)
-                .then(response => {
-                    // Display success message
-                    document.getElementById('statusMessage').innerHTML =
-                        `<div class="alert alert-success">Request submitted successfully. Your queue number is: ${response.data.queue_number}</div>`;
-                    $('#infoModal').modal('hide'); // Hide the modal
-                })
-                .catch(error => {
-                    // Display error message
-                    console.error('Error:', error); // Log full error to console for debugging
-                    document.getElementById('statusMessage').innerHTML =
-                        `<div class="alert alert-danger">An error occurred: ${error.response ? error.response.data.message : error.message}</div>`;
-                });
+    // Submit the form using Axios
+    axios.post('/request-document', formData)
+        .then(response => {
+            // Display success message
+            document.getElementById('statusMessage').innerHTML = `
+                <div class="alert alert-success">Request submitted successfully. Your queue number is: ${response.data.queue_number}</div>
+            `;
+        })
+        .catch(error => {
+            // Display error message
+            console.error('Error:', error); // Log full error to console for debugging
+            document.getElementById('statusMessage').innerHTML = `
+                <div class="alert alert-danger">An error occurred while submitting your request. Please try again.</div>
+            `;
         });
+});
 
         // Set CSRF token for Axios
         axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        
     </script>
 
     <!-- Include Bootstrap JS for modals -->
