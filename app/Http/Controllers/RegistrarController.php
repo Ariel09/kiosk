@@ -109,7 +109,6 @@ class RegistrarController extends Controller
             // Optionally return an error response or continue without printing
         }
 
-        // Return a JSON response to the front-end
         return response()->json([
             'message' => 'Request submitted successfully.',
             'queue_number' => $queueNumber,
