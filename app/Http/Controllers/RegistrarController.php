@@ -62,17 +62,34 @@ class RegistrarController extends Controller
         ]);
 
         try {
-            // Printing the queue number
-            $connector = new WindowsPrintConnector("POS_PRINTER"); // Change to your printer connection type
-            $printer = new Printer($connector);
-            
-            $printer->setTextSize(2, 2); // Set text size
-            $printer->text("Queue Number:\n");
-            $printer->text($queueNumber . "\n");
-            $printer->feed(3); // Add a line break
-            $printer->cut(); // Cut the receipt
-            $printer->close(); // Close the printer connection
-            
+     // Create a connection to the printer
+     $connector = new WindowsPrintConnector("TM-U220"); // Change to your printer connection type
+     $printer = new Printer($connector);
+
+     // Center the "Queue Number" text
+     $printer->setJustification(Printer::JUSTIFY_CENTER); // Center the text
+
+     // Print the title "Queue Number"
+     $printer->setEmphasis(true); // Bold the text
+     $printer->text("Queue Number:\n");
+     $printer->setEmphasis(false); // Turn off bold
+
+     // Set text to double-width and double-height (largest available size for many printers)
+     $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH | Printer::MODE_DOUBLE_HEIGHT);
+
+     // Print the queue number without repeating, and add space between characters
+     $formattedQueueNumber = implode(' ', str_split($queueNumber));  // Adds space between characters
+     $printer->text($formattedQueueNumber . "\n");
+
+     // Add extra line feeds for spacing
+     $printer->feed(3); // Adds 3 line breaks before cutting
+
+     // Cut the receipt
+     $printer->cut();
+
+     // Close the printer connection
+     $printer->close();
+
         } catch (\Exception $e) {
             Log::error('Error printing queue number: ' . $e->getMessage());
             // Optionally return an error response or continue without printing
@@ -97,5 +114,5 @@ class RegistrarController extends Controller
             'queue_numbers' => $waitingList,
         ]);
     }
-    
+
 }
