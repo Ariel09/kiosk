@@ -66,8 +66,14 @@ class RegistrarController extends Controller
      $connector = new WindowsPrintConnector("TM-U220"); // Change to your printer connection type
      $printer = new Printer($connector);
 
-     // Center the "Queue Number" text
+     // Center the header text
      $printer->setJustification(Printer::JUSTIFY_CENTER); // Center the text
+
+     // Print the school title as header
+     $printer->setEmphasis(true); // Bold the text
+     $printer->text("Saint Ignatius Academy\n");
+     $printer->setEmphasis(false); // Turn off bold
+     $printer->text("est. 2013\n\n"); // Add the establishment year with a line break
 
      // Print the title "Queue Number"
      $printer->setEmphasis(true); // Bold the text
@@ -77,9 +83,17 @@ class RegistrarController extends Controller
      // Set text to double-width and double-height (largest available size for many printers)
      $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH | Printer::MODE_DOUBLE_HEIGHT);
 
-     // Print the queue number without repeating, and add space between characters
-     $formattedQueueNumber = implode(' ', str_split($queueNumber));  // Adds space between characters
+     // Format the current date and time
+     $currentDateTime = now()->format('Y-m-d H:i:s'); // Format: YYYY-MM-DD HH:MM:SS
+     $formattedQueueNumber = implode(' ', str_split($queueNumber)); // Adds space between characters
+
+     // Print the queue number and the current date/time
      $printer->text($formattedQueueNumber . "\n");
+
+     // Reset text size to normal for the date and time
+     $printer->selectPrintMode();
+     $printer->setJustification(Printer::JUSTIFY_CENTER); // Center the date/time
+     $printer->text("Date & Time: " . $currentDateTime . "\n");
 
      // Add extra line feeds for spacing
      $printer->feed(3); // Adds 3 line breaks before cutting
