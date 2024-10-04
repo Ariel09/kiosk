@@ -15,7 +15,7 @@ class DocumentRequestPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_payment');
+        return $user->can('view_any_release::document');
     }
 
     /**
@@ -23,7 +23,7 @@ class DocumentRequestPolicy
      */
     public function view(User $user, DocumentRequest $documentRequest): bool
     {
-        return $user->can('view_payment');
+        return $user->can('view_release::document');
     }
 
     /**
@@ -31,7 +31,7 @@ class DocumentRequestPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_payment');
+        return $user->can('create_release::document');
     }
 
     /**
@@ -39,7 +39,7 @@ class DocumentRequestPolicy
      */
     public function update(User $user, DocumentRequest $documentRequest): bool
     {
-        return $user->can('update_payment');
+        return $user->can('update_release::document');
     }
 
     /**
@@ -47,7 +47,7 @@ class DocumentRequestPolicy
      */
     public function delete(User $user, DocumentRequest $documentRequest): bool
     {
-        return $user->can('delete_payment');
+        return $user->can('delete_release::document');
     }
 
     /**
@@ -55,7 +55,7 @@ class DocumentRequestPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_payment');
+        return $user->can('delete_any_release::document');
     }
 
     /**
