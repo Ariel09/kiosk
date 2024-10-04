@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Document;
 use App\Models\DocumentRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -42,12 +43,15 @@ class RegistrarController extends Controller
             'name' => 'required|string|max:255',
             'contact' => 'required|string|max:15',
             'email' => 'required|email|max:255',
-            'document_type' => 'required|string',
+            'document_type' => 'required|exists:documents,id',
             'year_level' => 'required|string|max:10',
         ]);
 
         // Generate a unique queue number
         $queueNumber = strtoupper(Str::random(5));
+
+        $documentType = Document::where('id', $request->document_type)->first();
+
 
         // Create a new document request
         $documentRequest = DocumentRequest::create([
@@ -55,10 +59,12 @@ class RegistrarController extends Controller
             'name' => $request->name,
             'contact' => $request->contact,
             'email' => $request->email,
-            'document_type' => $request->document_type,
+            'document_id' => $documentType->id,
             'year_level' => $request->year_level,
             'status' => 'on_hold',
             'queue_number' => $queueNumber,
+            'amount' => $documentType->price,
+            'payment_date' => null,
         ]);
 
         try {
