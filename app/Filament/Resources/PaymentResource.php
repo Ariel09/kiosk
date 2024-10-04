@@ -3,8 +3,10 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PaymentResource\Pages;
+use App\Models\Document;
 use App\Models\DocumentRequest;  // Ensure this line is present
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -56,12 +58,18 @@ class PaymentResource extends Resource
                         'paid' => 'Paid',
                     ])
                     ->required()
-                    ->default('on_hold'),
+                    ->default('paid'),
+                Select::make('document_id')
+    ->label('Select Document')
+    ->required()
+    ->options(Document::all()->pluck('document_name', 'id')) // Fetch documents and map to key-value pairs
+    ->placeholder('Choose a document'), // Optional: Placeholder text
                 TextInput::make('amount')
                     ->numeric()
                     ->required(),
-                TextInput::make('payment_reference')
-                    ->required(),
+                DatePicker::make('payment_date')
+                    ->required()
+                    ->default(now()),
             ]);
     }
 
@@ -88,15 +96,17 @@ class PaymentResource extends Resource
                 TextColumn::make('amount')
                     ->label('Payment Amount')
                     ->sortable()
-                    ->money('usd', true),
-                TextColumn::make('payment_reference')
-                    ->label('Payment Reference')
+                    ->money('php', true),
+                TextColumn::make('payment_date')
+                    ->label('Payment Date')
                     ->copyable()
                     ->searchable(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+            Tables\Actions\EditAction::make()
+                ->label('Process'),
             ])
+            ->headerActions([])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
@@ -111,7 +121,7 @@ class PaymentResource extends Resource
     {
         return [
             'index' => Pages\ListPayments::route('/'),
-            'create' => Pages\CreatePayment::route('/create'),
+            //'create' => Pages\CreatePayment::route('/create'),
             'edit' => Pages\EditPayment::route('/{record}/edit'),
         ];
     }
