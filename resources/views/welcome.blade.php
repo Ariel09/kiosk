@@ -89,29 +89,15 @@
             <h2 class="text-center">Select Your Option</h2>
 
             <!-- Document Selection Buttons -->
-            <div class="card-container mt-4">
-                <div class="card-item">
-                    <button class="btn btn-light border card-button" onclick="openModal('Form 138')">Card/Form 138</button>
-                </div>
-                <div class="card-item">
-                    <button class="btn btn-light border card-button" onclick="openModal('Good Moral')">Good Moral</button>
-                </div>
-                <div class="card-item">
-                    <button class="btn btn-light border card-button" onclick="openModal('Diploma')">Diploma</button>
-                </div>
-                <div class="card-item">
-                    <button class="btn btn-light border card-button" onclick="openModal('Form 137')">Form 137</button>
-                </div>
-                <div class="card-item">
-                    <button class="btn btn-light border card-button" onclick="openModal('TOR')">Transcript of Records (TOR)</button>
-                </div>
-                <div class="card-item">
-                    <button class="btn btn-light border card-button" onclick="openModal('CTC')">Certified True Copy (CTC)</button>
-                </div>
-                <div class="card-item">
-                    <button class="btn btn-light border card-button" onclick="openModal('COE')">Certificate of Enrollment (COE)</button>
-                </div>
-            </div>
+<div class="card-container mt-4">
+    @foreach ($documents as $document)
+        <div class="card-item">
+            <button class="btn btn-light border card-button" onclick="openModal('{{ $document->id }}')">
+                {{ $document->document_name }}
+            </button>
+        </div>
+    @endforeach
+</div>
 
             <!-- Information Modal -->
             <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
