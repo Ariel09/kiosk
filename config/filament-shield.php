@@ -35,26 +35,24 @@ return [
             'view_any',
             'create',
             'update',
-            'restore',
-            'restore_any',
-            'replicate',
-            'reorder',
             'delete',
             'delete_any',
-            'force_delete',
-            'force_delete_any',
         ],
 
         'page' => 'page',
         'widget' => 'widget',
     ],
 
-    'entities' => [
-        'pages' => true,
-        'widgets' => true,
-        'resources' => true,
-        'custom_permissions' => false,
+'entities' => [
+    'document_request' => [
+        'model' => App\Models\DocumentRequest::class,
+        'resource' => [
+            'DocumentRequestResource',
+            'PaymentResource',
+            'ReleaseDocumentResource',
+        ],
     ],
+],
 
     'generator' => [
         'option' => 'policies_and_permissions',
