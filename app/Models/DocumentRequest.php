@@ -21,10 +21,12 @@ class DocumentRequest extends Model
     'name',
     'contact',
     'email',
-    'document_type',
+    'document_id',
     'year_level',
     'status',
     'queue_number',
+    'amount',
+    'payment_date',
     ];
 
     /**
@@ -33,5 +35,10 @@ class DocumentRequest extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function document()
+    {
+        return $this->belongsTo(Document::class, 'document_id');
     }
 }
