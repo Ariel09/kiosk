@@ -89,15 +89,44 @@
             <h2 class="text-center">Select Your Option</h2>
 
             <!-- Document Selection Buttons -->
-<div class="card-container mt-4">
-    @foreach ($documents as $document)
-        <div class="card-item">
-            <button class="btn btn-light border card-button" onclick="openModal('{{ $document->id }}')">
-                {{ $document->document_name }}
-            </button>
-        </div>
-    @endforeach
+            <div class="card-container mt-4">
+    <div class="card-item">
+        <button class="btn btn-light border card-button" onclick="openModal('form_138')">
+            Form 138
+        </button>
+    </div>
+    <div class="card-item">
+        <button class="btn btn-light border card-button" onclick="openModal('form_137')">
+            Form 137
+        </button>
+    </div>
+    <div class="card-item">
+        <button class="btn btn-light border card-button" onclick="openModal('good_moral')">
+            Good Moral
+        </button>
+    </div>
+    <div class="card-item">
+        <button class="btn btn-light border card-button" onclick="openModal('diploma')">
+            Diploma
+        </button>
+    </div>
+    <div class="card-item">
+        <button class="btn btn-light border card-button" onclick="openModal('tor')">
+            TOR
+        </button>
+    </div>
+    <div class="card-item">
+        <button class="btn btn-light border card-button" onclick="openModal('ctc')">
+            CTC
+        </button>
+    </div>
+    <div class="card-item">
+        <button class="btn btn-light border card-button" onclick="openModal('coe')">
+            COE (Certificate of enrollment)
+        </button>
+    </div>
 </div>
+
 
             <!-- Information Modal -->
             <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
