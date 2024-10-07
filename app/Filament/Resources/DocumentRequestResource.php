@@ -14,10 +14,22 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 
 class DocumentRequestResource extends Resource
 {
     protected static ?string $model = DocumentRequest::class;
+
+        public static function canViewAny(): bool
+{
+    
+    return Auth::user()->can('view_document_request');
+}
+
+public static function canCreate(): bool
+{
+    return Auth::user()->can('create_document_request');
+}
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
