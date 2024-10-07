@@ -63,25 +63,25 @@ class RegistrarController extends Controller
 
         try {
             // Printing the queue number
-            $connector = new WindowsPrintConnector("POS_PRINTER"); // Change to your printer connection type
+            $connector = new WindowsPrintConnector("TM-U220"); // Change to your printer connection type
             $printer = new Printer($connector);
-            
+
             $printer->setTextSize(2, 2); // Set text size
             $printer->text("Queue Number:\n");
             $printer->text($queueNumber . "\n");
             $printer->feed(3); // Add a line break
-            $printer->cut(); // Cut the receipt
             $printer->close(); // Close the printer connection
-            
+
         } catch (\Exception $e) {
             Log::error('Error printing queue number: ' . $e->getMessage());
-            // Optionally return an error response or continue without printing
+            // You can decide to return an error message or just log it
         }
 
         // Return a JSON response to the front-end
         return response()->json([
             'message' => 'Request submitted successfully.',
             'queue_number' => $queueNumber,
+            'printing_status' => 'Attempted to print queue number.',
         ]);
     }
     public function getWaitingList()
@@ -97,5 +97,5 @@ class RegistrarController extends Controller
             'queue_numbers' => $waitingList,
         ]);
     }
-    
+
 }

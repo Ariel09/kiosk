@@ -149,7 +149,7 @@
 
         // Set CSRF token for Axios
         axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        
+
     </script>
 
     <!-- Include Bootstrap JS for modals -->
