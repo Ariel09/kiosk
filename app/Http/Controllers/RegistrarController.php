@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Document;
 use App\Models\DocumentRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -43,15 +42,12 @@ class RegistrarController extends Controller
             'name' => 'required|string|max:255',
             'contact' => 'required|string|max:15',
             'email' => 'required|email|max:255',
-            'document_type' => 'required|exists:documents,id',
+            'document_type' => 'required|string',
             'year_level' => 'required|string|max:10',
         ]);
 
         // Generate a unique queue number
         $queueNumber = strtoupper(Str::random(5));
-
-        $documentType = Document::where('id', $request->document_type)->first();
-
 
         // Create a new document request
         $documentRequest = DocumentRequest::create([
@@ -59,67 +55,65 @@ class RegistrarController extends Controller
             'name' => $request->name,
             'contact' => $request->contact,
             'email' => $request->email,
-            'document_id' => $documentType->id,
+            'document_type' => $request->document_type,
             'year_level' => $request->year_level,
             'status' => 'on_hold',
             'queue_number' => $queueNumber,
-            'amount' => $documentType->price,
-            'payment_date' => null,
         ]);
 
         try {
-     // Create a connection to the printer
-     $connector = new WindowsPrintConnector("TM-U220"); // Change to your printer connection type
-     $printer = new Printer($connector);
+            // Create a connection to the printer
+            $connector = new WindowsPrintConnector("TM-U220"); // Change to your printer connection type
+            $printer = new Printer($connector);
 
-     // Center the header text
-     $printer->setJustification(Printer::JUSTIFY_CENTER); // Center the text
+            // Center the header text
+            $printer->setJustification(Printer::JUSTIFY_CENTER); // Center the text
 
-     // Print the school title as header
-     $printer->setEmphasis(true); // Bold the text
-     $printer->text("Saint Ignatius Academy\n");
-     $printer->setEmphasis(false); // Turn off bold
-     $printer->text("est. 2013\n\n"); // Add the establishment year with a line break
+            // Print the school title as header
+            $printer->setEmphasis(true); // Bold the text
+            $printer->text("Saint Ignatius Academy\n");
+            $printer->setEmphasis(false); // Turn off bold
+            $printer->text("est. 2013\n\n"); // Add the establishment year with a line break
 
-     // Print the title "Queue Number"
-     $printer->setEmphasis(true); // Bold the text
-     $printer->text("Queue Number:\n");
-     $printer->setEmphasis(false); // Turn off bold
+            // Print the title "Queue Number"
+            $printer->setEmphasis(true); // Bold the text
+            $printer->text("Queue Number:\n");
+            $printer->setEmphasis(false); // Turn off bold
 
-     // Set text to double-width and double-height (largest available size for many printers)
-     $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH | Printer::MODE_DOUBLE_HEIGHT);
+            // Set text to double-width and double-height (largest available size for many printers)
+            $printer->selectPrintMode(Printer::MODE_DOUBLE_WIDTH | Printer::MODE_DOUBLE_HEIGHT);
 
-     // Format the current date and time
-     $currentDateTime = now()->format('Y-m-d H:i:s'); // Format: YYYY-MM-DD HH:MM:SS
-     $formattedQueueNumber = implode(' ', str_split($queueNumber)); // Adds space between characters
+            // Format the current date and time
+            $currentDateTime = now()->format('Y-m-d H:i:s'); // Format: YYYY-MM-DD HH:MM:SS
+            $formattedQueueNumber = implode(' ', str_split($queueNumber)); // Adds space between characters
 
-     // Print the queue number and the current date/time
-     $printer->text($formattedQueueNumber . "\n");
+            // Print the queue number and the current date/time
+            $printer->text($formattedQueueNumber . "\n");
 
-     // Reset text size to normal for the date and time
-     $printer->selectPrintMode();
-     $printer->setJustification(Printer::JUSTIFY_CENTER); // Center the date/time
-     $printer->text("Date & Time: " . $currentDateTime . "\n");
+            // Reset text size to normal for the date and time
+            $printer->selectPrintMode();
+            $printer->setJustification(Printer::JUSTIFY_CENTER); // Center the date/time
+            $printer->text("Date & Time: " . $currentDateTime . "\n");
 
-     // Add extra line feeds for spacing
-     $printer->feed(3); // Adds 3 line breaks before cutting
+            // Add extra line feeds for spacing
+            $printer->feed(3); // Adds 3 line breaks before cutting
 
-     // Cut the receipt
-     $printer->cut();
+            // Cut the receipt
+            $printer->cut();
 
-     // Close the printer connection
-     $printer->close();
+            // Close the printer connection
+            $printer->close();
 
-        } catch (\Exception $e) {
-            Log::error('Error printing queue number: ' . $e->getMessage());
-            // Optionally return an error response or continue without printing
-        }
+               } catch (\Exception $e) {
+                   Log::error('Error printing queue number: ' . $e->getMessage());
+                   // Optionally return an error response or continue without printing
+               }
 
-        return response()->json([
-            'message' => 'Request submitted successfully.',
-            'queue_number' => $queueNumber,
-        ]);
-    }
+               return response()->json([
+                   'message' => 'Request submitted successfully.',
+                   'queue_number' => $queueNumber,
+               ]);
+           }
     public function getWaitingList()
     {
         // Fetch the latest 10 queue numbers that are in 'on_hold' or 'processing' status
