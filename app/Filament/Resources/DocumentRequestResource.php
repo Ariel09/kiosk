@@ -22,7 +22,7 @@ class DocumentRequestResource extends Resource
 
         public static function canViewAny(): bool
 {
-    
+
     return Auth::user()->can('view_document_request');
 }
 

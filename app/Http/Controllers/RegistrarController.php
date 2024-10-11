@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Document;
 use App\Models\DocumentRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,8 +23,8 @@ class RegistrarController extends Controller
     {
         // Fetch the latest document request that has a queue number
         $latestRequest = DocumentRequest::whereNotNull('queue_number')
-                                        ->orderBy('created_at', 'desc')
-                                        ->first();
+        ->orderBy('created_at', 'desc')
+         ->first();
 
         return response()->json([
             'queue_number' => $latestRequest ? $latestRequest->queue_number : 'No Queue',
@@ -48,7 +49,7 @@ class RegistrarController extends Controller
 
         // Generate a unique queue number
         $queueNumber = strtoupper(Str::random(5));
-
+        $documentType = Document::where('id', $request->document_type)->first();
         // Create a new document request
         $documentRequest = DocumentRequest::create([
             'user_id' => auth()->id(), // Optional, if user authentication is used
