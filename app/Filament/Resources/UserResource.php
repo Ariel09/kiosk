@@ -41,7 +41,12 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('name')->required(),
+                TextInput::make('firstname')->required(),
+                TextInput::make('middlename'),
+                TextInput::make('lastname')->required(),
+                TextInput::make('suffix'),
+                TextInput::make('role')->required(),
+                TextInput::make('contact_number'),
                 TextInput::make('email')
                     ->email()
                     ->required(),
@@ -63,11 +68,19 @@ class UserResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('id')->sortable(),
-                TextColumn::make('name')->sortable()->searchable(),
+                TextColumn::make('full_name')
+                    ->label('Name')
+                    ->formatStateUsing(fn($record) => $record->full_name)
+                    ->sortable(['lastname', 'firstname'])
+                    ->searchable(query: function ($query, $search) {
+                        $query->where(function ($query) use ($search) {
+                            $query->where('firstname', 'like', "%{$search}%")
+                                ->orWhere('lastname', 'like', "%{$search}%");
+                        });
+                    }),
                 TextColumn::make('email')->sortable()->searchable(),
-                TextColumn::make('roles.name')  // Display user roles in the table
-                    ->label('Roles')
-                    ->sortable(),
+                TextColumn::make('role')  // Display user roles in the table
+                    ->label('Roles'),
             ])
             ->filters([
                 //
