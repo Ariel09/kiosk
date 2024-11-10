@@ -9,12 +9,18 @@ use Illuminate\Notifications\Notifiable;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Spatie\Permission\Traits\HasRoles;
+use Filament\Models\Contracts\HasName;
 
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable implements FilamentUser, HasName
 {
-    use HasRoles,HasFactory, Notifiable;
+    use HasRoles, HasFactory, Notifiable;
 
-        public function canAccessPanel(Panel $panel): bool
+    public function getFilamentName(): string
+    {
+        return $this->role;
+    }
+
+    public function canAccessPanel(Panel $panel): bool
     {
         return str_ends_with($this->email, '@admin.com');
     }
@@ -25,9 +31,16 @@ class User extends Authenticatable implements FilamentUser
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'role',
         'email',
         'password',
+        'student_number',
+        'firstname',
+        'middlename',
+        'lastname',
+        'suffix',
+        'contact_number'
+
     ];
 
     /**
@@ -51,5 +64,25 @@ class User extends Authenticatable implements FilamentUser
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function getFullNameAttribute(): string
+    {
+        $name = $this->firstname;
+
+        // Add middle initial if it exists
+        if (!empty($this->middlename)) {
+            $name .= ' ' . strtoupper(substr($this->middlename, 0, 1)) . '.';
+        }
+
+        // Add last name
+        $name .= ' ' . $this->lastname;
+
+        // Add suffix if it exists
+        if (!empty($this->suffix)) {
+            $name .= ', ' . $this->suffix;
+        }
+
+        return $name;
     }
 }
