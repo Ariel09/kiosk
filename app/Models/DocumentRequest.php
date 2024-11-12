@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class DocumentRequest extends Model
 {
     /** @use HasFactory<\Database\Factories\DocumentRequestFactory> */
-   
+
     use HasFactory;
 
     /**
@@ -18,15 +18,15 @@ class DocumentRequest extends Model
      */
     protected $fillable = [
         'user_id',
-    'name',
-    'contact',
-    'email',
-    'document_id',
-    'year_level',
-    'status',
-    'queue_number',
-    'amount',
-    'payment_date',
+        'name',
+        'contact',
+        'email',
+        'document_id',
+        'year_level',
+        'status',
+        'queue_number',
+        'amount',
+        'payment_date',
     ];
 
     /**
@@ -37,8 +37,8 @@ class DocumentRequest extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function document()
+    public function documents()
     {
-        return $this->belongsTo(Document::class, 'document_id');
+        return $this->belongsToMany(Document::class, 'document_request_document');
     }
 }
