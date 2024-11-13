@@ -11,14 +11,11 @@ use Filament\Panel;
 use Spatie\Permission\Traits\HasRoles;
 use Filament\Models\Contracts\HasName;
 
-class User extends Authenticatable implements FilamentUser, HasName
+class User extends Authenticatable implements FilamentUser
 {
     use HasRoles, HasFactory, Notifiable;
 
-    public function getFilamentName(): string
-    {
-        return $this->role;
-    }
+ 
 
     public function canAccessPanel(Panel $panel): bool
     {
@@ -31,7 +28,7 @@ class User extends Authenticatable implements FilamentUser, HasName
      * @var array<int, string>
      */
     protected $fillable = [
-        'role',
+        'name',
         'email',
         'password',
         'student_number',
@@ -39,7 +36,7 @@ class User extends Authenticatable implements FilamentUser, HasName
         'middlename',
         'lastname',
         'suffix',
-        'contact_number'
+        'contact_number',
 
     ];
 
