@@ -6,6 +6,7 @@ use App\Filament\Resources\StudentResource\Pages;
 use App\Filament\Resources\StudentResource\RelationManagers;
 use App\Models\Student;
 use Filament\Forms;
+use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -23,9 +24,19 @@ class StudentResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\TextInput::make('email')
+                    ->email()
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('password')
+                    ->maxLength(255)
+                    ->default(null)
+                    ->password()
+                    ->required(),
                 Forms\Components\TextInput::make('student_number')
                     ->maxLength(255)
-                    ->default(null),
+                    ->default(null)
+                    ->required(),
                 Forms\Components\TextInput::make('firstname')
                     ->required()
                     ->maxLength(255),
@@ -40,11 +51,8 @@ class StudentResource extends Resource
                     ->default(null),
                 Forms\Components\TextInput::make('contact_number')
                     ->maxLength(255)
-                    ->default(null),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->required()
-                    ->maxLength(255),
+                    ->default(null)
+                    ->required(),
             ]);
     }
 
@@ -66,7 +74,8 @@ class StudentResource extends Resource
                     }),
                 Tables\Columns\TextColumn::make('contact_number')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email')
+                Tables\Columns\TextColumn::make('user.email') // Accessing email from User model
+                    ->label('Email')
                     ->searchable(),
             ])
             ->filters([

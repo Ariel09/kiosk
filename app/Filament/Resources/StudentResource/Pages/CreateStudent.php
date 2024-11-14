@@ -3,11 +3,15 @@
 namespace App\Filament\Resources\StudentResource\Pages;
 
 use App\Filament\Resources\StudentResource;
+use App\Models\Student;
+use App\Models\User;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CreateStudent extends CreateRecord
 {
@@ -15,16 +19,30 @@ class CreateStudent extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
-        // Set any default values for the user fields
-        $data['role'] = 'student';
-        $data['password'] = Hash::make($data['password'] ?? 'defaultpassword');
+        Log::info('Data', ['data' => $data]);
+        return DB::transaction(function () use ($data) {
+            // Create the user record with essential fields
+            $user = User::create([
+                'email' => $data['email'],
+                'password' => Hash::make($data['password'] ?? 'defaultpassword'),
+                'name' => 'student', // Placeholder for name, if needed
+            ]);
 
-        // Create the Student record
-        $student = static::getModel()::create($data);
+            // Assign the 'student' role to the user
+            $user->assignRole('student');
 
-        // Assign the 'student' role to the created record
-        $student->assignRole('student');
+            // Create the student record, associating with the user
+            $student = Student::create([
+                'user_id' => $user->id,
+                'student_number' => $data['student_number'],
+                'firstname' => $data['firstname'],
+                'middlename' => $data['middlename'] ?? null,
+                'lastname' => $data['lastname'],
+                'suffix' => $data['suffix'] ?? null,
+                'contact_number' => $data['contact_number'],
+            ]);
 
-        return $student;
+            return $student;
+        });
     }
 }
