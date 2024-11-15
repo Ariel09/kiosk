@@ -4,36 +4,25 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Spatie\Permission\Traits\HasRoles;
 
 class Student extends Model
 {
-    use HasFactory, HasRoles;
-
-    protected $guard_name = 'web';
-
-    // Specify the table associated with the model
-    protected $table = 'users';
+    use HasFactory;
 
     // Define fillable attributes for mass assignment
     protected $fillable = [
+        'user_id',
+        'student_number',
         'firstname',
         'middlename',
         'lastname',
         'suffix',
         'contact_number',
-        'email',
-        'password',
-        'role',
-        'student_number', // Add student_number here to allow mass assignment
     ];
 
-    // Add a scope to filter by role if necessary
-    protected static function booted()
+    public function user()
     {
-        static::addGlobalScope('student', function ($query) {
-            $query->where('role', 'student');
-        });
+        return $this->belongsTo(User::class);
     }
 
     public function getFullNameAttribute(): string

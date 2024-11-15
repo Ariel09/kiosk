@@ -11,14 +11,11 @@ use Filament\Panel;
 use Spatie\Permission\Traits\HasRoles;
 use Filament\Models\Contracts\HasName;
 
-class User extends Authenticatable implements FilamentUser, HasName
+class User extends Authenticatable implements FilamentUser
 {
     use HasRoles, HasFactory, Notifiable;
 
-    public function getFilamentName(): string
-    {
-        return $this->role;
-    }
+
 
     public function canAccessPanel(Panel $panel): bool
     {
@@ -31,7 +28,7 @@ class User extends Authenticatable implements FilamentUser, HasName
      * @var array<int, string>
      */
     protected $fillable = [
-        'role',
+        'name',
         'email',
         'password',
         'student_number',
@@ -39,7 +36,7 @@ class User extends Authenticatable implements FilamentUser, HasName
         'middlename',
         'lastname',
         'suffix',
-        'contact_number'
+        'contact_number',
 
     ];
 
@@ -66,23 +63,8 @@ class User extends Authenticatable implements FilamentUser, HasName
         ];
     }
 
-    public function getFullNameAttribute(): string
+    public function student()
     {
-        $name = $this->firstname;
-
-        // Add middle initial if it exists
-        if (!empty($this->middlename)) {
-            $name .= ' ' . strtoupper(substr($this->middlename, 0, 1)) . '.';
-        }
-
-        // Add last name
-        $name .= ' ' . $this->lastname;
-
-        // Add suffix if it exists
-        if (!empty($this->suffix)) {
-            $name .= ', ' . $this->suffix;
-        }
-
-        return $name;
+        return $this->hasOne(Student::class);
     }
 }
