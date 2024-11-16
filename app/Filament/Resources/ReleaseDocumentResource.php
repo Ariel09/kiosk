@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\PaymentResource\Pages;
+use App\Filament\Resources\ReleaseDocumentResource\Pages;
+use App\Filament\Resources\ReleaseDocumentResource\RelationManagers;
 use App\Models\Document;
-use App\Models\DocumentRequest;  // Ensure this line is present
+use App\Models\DocumentRequest;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -15,35 +16,31 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
 
-class PaymentResource extends Resource
+class ReleaseDocumentResource extends Resource
 {
-    protected static ?string $model = DocumentRequest::class;  // Ensure the model is properly set
+    protected static ?string $model = DocumentRequest::class;
 
-    public static function canViewAny(): bool
-    {
-        return Auth::user()->can('view_payment');
-    }
+    // public static function canViewAny(): bool
+    // {
+    //     return Auth::user()->can('view_release::document');
+    // }
 
-    public static function canCreate(): bool
-    {
-        return Auth::user()->can('create_payment');
-    }
+    // public static function canCreate(): bool
+    // {
+    //     return Auth::user()->can('create_release::document');
+    // }
 
     public static function getLabel(): string
     {
-        return 'Payment';  // Customize the label
-    }
-
-    public static function getPluralLabel(): string
-    {
-        return 'Payments';  // Customize the plural label
+        return 'Release Document';  // Customize the label
     }
 
     public static function getNavigationGroup(): ?string
     {
-        return 'Cashier';  // Assign a custom navigation group
+        return 'Registrar';  // Assign a custom navigation group
     }
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -54,8 +51,8 @@ class PaymentResource extends Resource
             ->schema([
                 Select::make('status')
                     ->options([
-                        'on_hold' => 'On Hold',
                         'paid' => 'Paid',
+                        'released' => 'Release',
                     ])
                     ->required()
                     ->default('paid'),
@@ -76,7 +73,6 @@ class PaymentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            //->query(fn (Builder $query) => $query->where('status', 'on_hold'))
             ->columns([
                 TextColumn::make('id')
                     ->sortable()
@@ -102,27 +98,35 @@ class PaymentResource extends Resource
                     ->copyable()
                     ->searchable(),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make()
-                    ->label('Process'),
+            ->filters([
+                //
             ])
-            ->headerActions([])
+            ->actions([
+                Tables\Actions\EditAction::make(),
+            ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
             ->modifyQueryUsing(function (Builder $query) {
-                return $query->where('status', 'on_hold');
+                return $query->where('status', 'paid');
             });
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPayments::route('/'),
-            //'create' => Pages\CreatePayment::route('/create'),
-            'edit' => Pages\EditPayment::route('/{record}/edit'),
+            'index' => Pages\ListReleaseDocuments::route('/'),
+            'create' => Pages\CreateReleaseDocument::route('/create'),
+            'edit' => Pages\EditReleaseDocument::route('/{record}/edit'),
         ];
     }
 }
