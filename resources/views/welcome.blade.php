@@ -82,12 +82,37 @@
         <h1>Hello, Welcome to the Saint Ignatius Academy!</h1>
         <div id="continueButton">Tap the screen to proceed</div>
     </div>
-
+    
     <!-- Main Content -->
     <div id="mainContent">
         <div class="container mt-5">
             <h2 class="text-center">Select Your Option</h2>
+            <div id="header-right" class="flex items-center md:space-x-6">
+                <div class="flex space-x-5">
+                    @if (Route::has('filament.admin.auth.login'))
+                        <nav class="flex justify-end flex-1 -mx-3">
+                            @auth
+                                <a href="{{ route('filament.admin.pages.dashboard') }}"
+                                    class="btn-custom">
+                                    Dashboard
+                                </a>
+                            @else
+                                <a href="{{ route('filament.admin.auth.login') }}"
+                                    class="btn-custom">
+                                    LOGIN
+                                </a>
 
+                                @if (Route::has('register'))
+                                    <a href="{{ route('register') }}"
+                                        class="text-white hover:text-gray-300">
+                                        Register
+                                    </a>
+                                @endif
+                            @endauth
+                        </nav>
+                    @endif
+                </div>
+            </div>
             <!-- Document Selection Buttons -->
             <div class="card-container mt-4">
                 <div class="card-item">
@@ -143,12 +168,41 @@
                                     <label for="year_level">Year Level</label>
                                     <input type="text" class="form-control" id="year_level" name="year_level" placeholder="Enter your year level" required>
                                 </div>
+                                   <!-- Data Privacy Checkbox -->
+                             <!-- Data Privacy Checkbox -->
+                            <div class="form-check">
+                         <input type="checkbox" class="form-check-input" id="dataPrivacy" name="data_privacy" required>
+                     <label class="form-check-label" for="dataPrivacy">
+                              I agree to the <a href="#" data-toggle="modal" data-target="#privacyPolicyModal">Data Privacy Policy</a>.
+                             </label>
+                                </div>
                                 <button type="submit" class="btn btn-primary">Submit Request</button>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
+            <!-- Privacy Policy Modal -->
+<div class="modal fade" id="privacyPolicyModal" tabindex="-1" role="dialog" aria-labelledby="privacyPolicyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="privacyPolicyModalLabel">Data Privacy Policy</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+               <p>I hereby affirm that all information supplied herein is complete and accurate. Withholding or giving false information will make me ineligible for admission or subject to dismissal. If admitted, I agree to abide by the established guidelines of Pamantasan ng Cabuyao.</p> 
+
+               <p> Further, I agree to collection and processing of my data for the purpose of processing request for school records at Pamantasan ng Cabuyao. I understand that my personal information is protected by RA 10173, Data Privacy Act of 2012, and that I am required to provide truthful information. I understand that my personal information shall not be shared or disclosed with other parties without consent unless the disclosure is required by, or in compliance with, applicable laws and regulations.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
             <!-- Status Message -->
             <div id="statusMessage" class="mt-4"></div>

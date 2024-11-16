@@ -41,6 +41,12 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
+                TextInput::make('student_id')
+                ->email()
+                ->required(),
+                TextInput::make('lastname')
+                ->email()
+                ->required(),
                 TextInput::make('name')->required(),
                 TextInput::make('email')
                     ->email()
@@ -63,6 +69,8 @@ class UserResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('id')->sortable(),
+                TextColumn::make('student_id')->sortable()->searchable(),
+                TextColumn::make('lastname')->sortable()->searchable(),
                 TextColumn::make('name')->sortable()->searchable(),
                 TextColumn::make('email')->sortable()->searchable(),
                 TextColumn::make('roles.name')  // Display user roles in the table
