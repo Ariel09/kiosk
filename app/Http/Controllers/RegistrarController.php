@@ -23,8 +23,8 @@ class RegistrarController extends Controller
     {
         // Fetch the latest document request that has a queue number
         $latestRequest = DocumentRequest::whereNotNull('queue_number')
-        ->orderBy('created_at', 'desc')
-         ->first();
+            ->orderBy('created_at', 'desc')
+            ->first();
 
         return response()->json([
             'queue_number' => $latestRequest ? $latestRequest->queue_number : 'No Queue',
@@ -40,27 +40,46 @@ class RegistrarController extends Controller
     {
         // Validate the incoming request data
         $request->validate([
-            'name' => 'required|string|max:255',
-            'contact' => 'required|string|max:15',
-            'email' => 'required|email|max:255',
-            'document_type' => 'required|string',
+            'user_id' => 'required|exists:users,id',
+            'documents' => 'required|array', // Expecting an array of documents
+            'documents.*.document_type' => 'required|exists:documents,id', // Validate document type ID
             'year_level' => 'required|string|max:10',
+            'program' => 'required|string',
         ]);
 
         // Generate a unique queue number
         $queueNumber = strtoupper(Str::random(5));
-        $documentType = Document::where('id', $request->document_type)->first();
-        // Create a new document request
+
+        // Calculate the total amount from the selected documents' price
+        $totalAmount = 0;
+
+        foreach ($request->documents as $doc) {
+            // Find the document by its ID (ensure this exists)
+            $document = Document::findOrFail($doc['document_type']);
+
+            // Add the document's price to the total amount
+            $totalAmount += $document->price;
+        }
+
+        // Create a new document request with the total amount
         $documentRequest = DocumentRequest::create([
-            'user_id' => auth()->id(), // Optional, if user authentication is used
-            'name' => $request->name,
-            'contact' => $request->contact,
-            'email' => $request->email,
-            'document_type' => $request->document_type,
+            'user_id' => $request->user_id,
             'year_level' => $request->year_level,
+            'program' => $request->program,
             'status' => 'on_hold',
             'queue_number' => $queueNumber,
+            'amount' => $totalAmount,  // Save the total amount
         ]);
+
+        // Loop through each document in the request and save it to the pivot table
+        foreach ($request->documents as $doc) {
+            // Find the document by its ID (ensure this exists)
+            $document = Document::findOrFail($doc['document_type']);
+
+            // Attach the document to the document request (no quantity for now)
+            $documentRequest->documents()->attach($document->id);
+        }
+
 
         try {
             // Create a connection to the printer
@@ -104,29 +123,27 @@ class RegistrarController extends Controller
 
             // Close the printer connection
             $printer->close();
+        } catch (\Exception $e) {
+            Log::error('Error printing queue number: ' . $e->getMessage());
+            // Optionally return an error response or continue without printing
+        }
 
-               } catch (\Exception $e) {
-                   Log::error('Error printing queue number: ' . $e->getMessage());
-                   // Optionally return an error response or continue without printing
-               }
-
-               return response()->json([
-                   'message' => 'Request submitted successfully.',
-                   'queue_number' => $queueNumber,
-               ]);
-           }
+        return response()->json([
+            'message' => 'Request submitted successfully.',
+            'queue_number' => $queueNumber,
+        ]);
+    }
     public function getWaitingList()
     {
         // Fetch the latest 10 queue numbers that are in 'on_hold' or 'processing' status
         $waitingList = DocumentRequest::whereNotNull('queue_number')
-                                       ->where('status', 'on_hold')
-                                       ->orderBy('created_at', 'desc')
-                                       ->limit(10)
-                                       ->pluck('queue_number');
+            ->where('status', 'on_hold')
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->pluck('queue_number');
 
         return response()->json([
             'queue_numbers' => $waitingList,
         ]);
     }
-
 }
