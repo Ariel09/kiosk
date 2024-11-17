@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\DocumentRequestResource\Pages;
 use App\Filament\Resources\DocumentRequestResource\RelationManagers;
+use App\Filament\Resources\DocumentRequestResource\Widgets\DocumentRequestOverview;
 use App\Models\DocumentRequest;
 use Filament\Actions\Action;
 use Filament\Forms;
@@ -103,6 +104,12 @@ public static function canCreate(): bool
             //
         ];
     }
+    public static function getStats(): array
+{
+    return [
+        DocumentRequestOverview::class,
+    ];
+}
 
     public static function getPages(): array
     {
