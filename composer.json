@@ -11,6 +11,7 @@
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
         "mike42/escpos-php": "^4.0",
+        "pxlrbt/filament-excel": "^2.3",
         "shuvroroy/filament-spatie-laravel-backup": "^2.2",
         "z3d0x/filament-logger": "^0.7.2"
     },
