@@ -166,7 +166,19 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="year_level">Year Level</label>
-                                    <input type="text" class="form-control" id="year_level" name="year_level" placeholder="Enter your year level" required>
+                                    <select class="form-control" id="year_level" name="year_level" required>
+                                        <option value="" disabled selected>Select your year level</option>
+                                        <option value="SHS">SHS: GAS</option>
+                                        <option value="SHS">HUMMS</option>
+                                        <option value="SHS"> ABM</option>
+                                        <option value="SHS">STEM</option>
+                                        <option value="SHS">ICT</option>
+                                        <option value="SHS">HE</option>
+                                        <option value="BS Accountancy">BS Accountancy</option>
+                                        <option value="BS Criminology ">BS Criminology </option>
+                                        <option value="BS Office Administration  ">BS Office Administration</option>
+                                        <option value="Bachelor of Technical-Vocational Teacher Education">Bachelor of Technical-Vocational Teacher Education</option>
+                                    </select>
                                 </div>
                                    <!-- Data Privacy Checkbox -->
                              <!-- Data Privacy Checkbox -->
