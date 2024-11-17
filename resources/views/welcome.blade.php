@@ -176,7 +176,7 @@
                               I agree to the <a href="#" data-toggle="modal" data-target="#privacyPolicyModal">Data Privacy Policy</a>.
                              </label>
                                 </div>
-                                <button type="submit" class="btn btn-primary">Submit Request</button>
+                                <button type="submit" class="btn btn-primary">Proceed To Checkout</button>
                             </form>
                         </div>
                     </div>
@@ -208,6 +208,7 @@
             <div id="statusMessage" class="mt-4"></div>
         </div>
     </div>
+    
 
     <script>
         // Handle tapping anywhere on the landing overlay to proceed

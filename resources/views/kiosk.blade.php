@@ -79,8 +79,8 @@
             <table class="queue-table">
                 <thead>
                     <tr>
-                        <th>Current Queue Number</th>
-                        <th>Window</th>
+                        <th>Preparing</th>
+                        <th>Collect</th>
                     </tr>
                 </thead>
                 <tbody>
