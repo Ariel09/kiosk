@@ -169,6 +169,30 @@
                 <button class="btn btn-primary btn-lg" onclick="proceedToCheckout()">Proceed to Checkout</button>
             </div>
         </div>
+        <!-- Privacy Policy Modal -->
+        <div class="modal fade" id="privacyPolicyModal" tabindex="-1" role="dialog" aria-labelledby="privacyPolicyModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="privacyPolicyModalLabel">Data Privacy Policy</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <p>I hereby affirm that all information supplied herein is complete and accurate. Withholding or giving false information will make me ineligible for admission or subject to dismissal. If admitted, I agree to abide by the established guidelines of Pamantasan ng Cabuyao.</p>
+
+                        <p> Further, I agree to collection and processing of my data for the purpose of processing request for school records at Pamantasan ng Cabuyao. I understand that my personal information is protected by RA 10173, Data Privacy Act of 2012, and that I am required to provide truthful information. I understand that my personal information shall not be shared or disclosed with other parties without consent unless the disclosure is required by, or in compliance with, applicable laws and regulations.</p>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="agreePrivacyPolicy">Agree</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- Checkout Modal -->
         <div class="modal fade" id="checkoutModal" tabindex="-1" role="dialog" aria-labelledby="checkoutModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -182,6 +206,7 @@
                     <div class="modal-body">
                         <form id="checkoutForm">
                             @csrf
+                            <input type="hidden" id="user_id" value="{{ Auth::user()->id }}">
                             <div class="form-group">
                                 <label for="name">Name</label>
                                 <input type="text" class="form-control" id="name" name="name" placeholder="Enter your name" value="{{ auth()->user()->student->full_name ?? '' }}" required>
@@ -196,7 +221,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="program">Year Level</label>
-                                <select class="form-control" id="program" name="program" required>
+                                <select class="form-control" id="year_level" name="year_level" required>
                                     <option value="" disabled selected>Select your year level</option>
                                     <option value="SHS">1st year</option>
                                     <option value="SHS">2nd year</option>
@@ -291,8 +316,14 @@
                 }
 
                 // Show the checkout modal
-                $('#checkoutModal').modal('show');
+                $('#privacyPolicyModal').modal('show');
             }
+
+            // Handle Agree button click inside Privacy Policy Modal
+            document.getElementById("agreePrivacyPolicy").addEventListener("click", function() {
+                $('#privacyPolicyModal').modal('hide'); // Hide Privacy Policy Modal
+                $('#checkoutModal').modal('show'); // Show Checkout Modal
+            });
 
             // Handle form submission
             document.getElementById("checkoutForm").addEventListener("submit", function(e) {
@@ -312,10 +343,9 @@
 
                 // Collect user information from the form
                 const formData = {
-                    name: document.getElementById("name").value,
-                    contact: document.getElementById("contact").value,
-                    email: document.getElementById("email").value,
+                    user_id: document.getElementById("user_id").value,
                     year_level: document.getElementById("year_level").value,
+                    program: document.getElementById("program").value,
                     documents: documents, // Include cart data
                 };
 
