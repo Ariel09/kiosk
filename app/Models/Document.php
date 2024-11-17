@@ -17,6 +17,6 @@ class Document extends Model
 
     public function documentRequests()
     {
-        return $this->hasMany(DocumentRequest::class, 'document_id');
+        return $this->belongsToMany(DocumentRequest::class, 'document_request_document', 'document_id', 'document_request_id');
     }
 }
