@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,42 +8,86 @@
     <title>Kiosk Document Request</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: "Inter", system-ui;
+            font-family: "Inter", sans-serif;
             margin: 0;
             padding: 0;
             height: 100vh;
             overflow: hidden;
         }
-        /* Landing Overlay Styling */
-        #landingOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #ffffff;
+
+        nav {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+        }
+
+        nav .btn-custom {
+            color: white;
+            border: 1px solid white;
+            border-radius: 5px;
+            padding: 5px 10px;
+            margin-left: 10px;
+            text-decoration: none;
+        }
+
+        nav .btn-custom:hover {
+            background-color: white;
+            color: #007bff;
+        }
+
+        .main-container {
             display: flex;
-            justify-content: center;
-            align-items: center;
+            flex-direction: row;
+            height: calc(100vh - 50px);
+            overflow: hidden;
+        }
+
+        .document-selection,
+        .cart-section {
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .document-selection {
+            flex: 2;
+            border-right: 1px solid #ddd;
+            font-size: 1.2rem;
+        }
+
+        .cart-section {
+            flex: 1;
+            display: flex;
             flex-direction: column;
-            z-index: 1000;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
-            cursor: pointer; /* Make the whole overlay clickable */
         }
-        #landingOverlay.hidden {
-            opacity: 0;
-            visibility: hidden;
-        }
-        #landingOverlay h1 {
-            font-size: 2rem;
+
+        .cart-header {
             margin-bottom: 20px;
         }
-        /* Card button styling */
+
+        .cart-items {
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .cart-footer {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .card-item {
+            flex: 1 1 calc(50% - 20px);
+            min-width: 200px;
+        }
+
         .card-button {
             width: 100%;
             height: 150px;
@@ -52,230 +97,244 @@
             align-items: center;
             border-radius: 10px;
         }
-        /* Container for card buttons */
-        .card-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-        }
-        .card-item {
-            flex: 1 1 calc(33.333% - 20px);
-            min-width: 200px;
-        }
-        /* Main content hidden initially */
-        #mainContent {
-            display: none;
-            height: 100%;
-            overflow: auto;
-        }
-        /* Show main content when overlay is hidden */
-        #mainContent.active {
-            display: block;
-        }
     </style>
 </head>
+
 <body>
-    <!-- Landing Overlay -->
-    <div id="landingOverlay">
-        <img src="{{ asset('logo.png') }}" alt="Academy Logo" style="max-width: 20%; margin-bottom: 5rem;">
-        <h1>Hello, Welcome to the Saint Ignatius Academy!</h1>
-        <div id="continueButton">Tap the screen to proceed</div>
-    </div>
-    
+    <!-- Navigation Bar -->
+    <nav class="d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <h4 class="mb-0">Kiosk Document Request</h4>
+        </div>
+        <div>
+            @if(Route::has('filament.admin.auth.login'))
+            <div class="d-flex align-items-center">
+                @auth
+                @if(auth()->user()?->student)
+                <span class="text-white">Welcome, {{ auth()->user()->student->full_name }}</span>
+                @else
+                <span class="text-white">Welcome, {{ auth()->user()->name ?? 'User' }}</span>
+                @endif
+                <form method="POST" action="{{ route('logout') }}" class="ml-3">
+                    @csrf
+                    <button type="submit" class="btn-custom">Logout</button>
+                </form>
+                @else
+                <a href="{{ route('filament.admin.auth.login') }}" class="btn-custom">LOGIN</a>
+                @if(Route::has('register'))
+                <a href="{{ route('register') }}" class="btn-custom">Register</a>
+                @endif
+                @endauth
+            </div>
+            @endif
+        </div>
+    </nav>
+
     <!-- Main Content -->
-    <div id="mainContent">
-        <div class="container mt-5">
-            <h2 class="text-center">Select Your Option</h2>
-            <div id="header-right" class="flex items-center md:space-x-6">
-                <div class="flex space-x-5">
-                    @if (Route::has('filament.admin.auth.login'))
-                        <nav class="flex justify-end flex-1 -mx-3">
-                            @auth
-                                <a href="{{ route('filament.admin.pages.dashboard') }}"
-                                    class="btn-custom">
-                                    Dashboard
-                                </a>
-                            @else
-                                <a href="{{ route('filament.admin.auth.login') }}"
-                                    class="btn-custom">
-                                    LOGIN
-                                </a>
-
-                                @if (Route::has('register'))
-                                    <a href="{{ route('register') }}"
-                                        class="text-white hover:text-gray-300">
-                                        Register
-                                    </a>
-                                @endif
-                            @endauth
-                        </nav>
-                    @endif
-                </div>
-            </div>
-            <!-- Document Selection Buttons -->
+    <div class="main-container">
+        <!-- Document Selection Section -->
+        <div class="document-selection">
+            <h2>Select Your Documents</h2>
             <div class="card-container mt-4">
+                @foreach ($documents as $document)
                 <div class="card-item">
-                    <button class="btn btn-light border card-button" onclick="openModal('Form 138')">Card/Form 138</button>
+                    <button class="btn btn-light border card-button" onclick="addToCart({{ $document->id }}, '{{ $document->document_name }}')">
+                        {{ $document->document_name }}
+                    </button>
                 </div>
-                <div class="card-item">
-                    <button class="btn btn-light border card-button" onclick="openModal('Good Moral')">Good Moral</button>
-                </div>
-                <div class="card-item">
-                    <button class="btn btn-light border card-button" onclick="openModal('Diploma')">Diploma</button>
-                </div>
-                <div class="card-item">
-                    <button class="btn btn-light border card-button" onclick="openModal('Form 137')">Form 137</button>
-                </div>
-                <div class="card-item">
-                    <button class="btn btn-light border card-button" onclick="openModal('TOR')">Transcript of Records (TOR)</button>
-                </div>
-                <div class="card-item">
-                    <button class="btn btn-light border card-button" onclick="openModal('CTC')">Certified True Copy (CTC)</button>
-                </div>
-                <div class="card-item">
-                    <button class="btn btn-light border card-button" onclick="openModal('COE')">Certificate of Enrollment (COE)</button>
-                </div>
+                @endforeach
             </div>
+        </div>
 
-            <!-- Information Modal -->
-            <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="infoModalLabel">Enter Your Information</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="documentRequestForm">
-                                @csrf <!-- CSRF token for security -->
-                                <input type="hidden" id="document_type" name="document_type">
-                                <div class="form-group">
-                                    <label for="name">Name</label>
-                                    <input type="text" class="form-control" id="name" name="name" placeholder="Enter your name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="contact">Contact Number</label>
-                                    <input type="text" class="form-control" id="contact" name="contact" placeholder="Enter your contact number" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="email">Email</label>
-                                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="year_level">Year Level</label>
-                                    <select class="form-control" id="year_level" name="year_level" required>
-                                        <option value="" disabled selected>Select your year level</option>
-                                        <option value="SHS">SHS: GAS</option>
-                                        <option value="SHS">HUMMS</option>
-                                        <option value="SHS"> ABM</option>
-                                        <option value="SHS">STEM</option>
-                                        <option value="SHS">ICT</option>
-                                        <option value="SHS">HE</option>
-                                        <option value="BS Accountancy">BS Accountancy</option>
-                                        <option value="BS Criminology ">BS Criminology </option>
-                                        <option value="BS Office Administration  ">BS Office Administration</option>
-                                        <option value="Bachelor of Technical-Vocational Teacher Education">Bachelor of Technical-Vocational Teacher Education</option>
-                                    </select>
-                                </div>
-                                   <!-- Data Privacy Checkbox -->
-                             <!-- Data Privacy Checkbox -->
-                            <div class="form-check">
-                         <input type="checkbox" class="form-check-input" id="dataPrivacy" name="data_privacy" required>
-                     <label class="form-check-label" for="dataPrivacy">
-                              I agree to the <a href="#" data-toggle="modal" data-target="#privacyPolicyModal">Data Privacy Policy</a>.
-                             </label>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Proceed To Checkout</button>
-                            </form>
-                        </div>
+        <!-- Cart Section -->
+        <div class="cart-section">
+            <div class="cart-header">
+                <h3>Your Cart</h3>
+            </div>
+            <div class="cart-items">
+                <table class="table table-bordered" id="cartTable">
+                    <thead>
+                        <tr>
+                            <th>Document</th>
+                            <th>Quantity</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Cart items will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="cart-footer">
+                <button class="btn btn-primary btn-lg" onclick="proceedToCheckout()">Proceed to Checkout</button>
+            </div>
+        </div>
+        <!-- Checkout Modal -->
+        <div class="modal fade" id="checkoutModal" tabindex="-1" role="dialog" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="checkoutModalLabel">Enter Your Information</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="checkoutForm">
+                            @csrf
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Enter your name" value="{{ auth()->user()->student->full_name ?? '' }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contact">Contact Number</label>
+                                <input type="text" class="form-control" id="contact" name="contact" placeholder="Enter your contact number" value="{{ auth()->user()->student->contact_number ?? '' }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" value="{{ auth()->user()->email ?? '' }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="program">Year Level</label>
+                                <select class="form-control" id="program" name="program" required>
+                                    <option value="" disabled selected>Select your year level</option>
+                                    <option value="SHS">1st year</option>
+                                    <option value="SHS">2nd year</option>
+                                    <option value="SHS">3rd year</option>
+                                    <option value="SHS">4th year</option>
+                                    <option value="SHS">SHS</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="program">Program</label>
+                                <select class="form-control" id="program" name="program" required>
+                                    <option value="" disabled selected>Select program</option>
+                                    <option value="SHS">SHS: GAS</option>
+                                    <option value="SHS">HUMMS</option>
+                                    <option value="SHS">ABM</option>
+                                    <option value="SHS">STEM</option>
+                                    <option value="SHS">ICT</option>
+                                    <option value="SHS">HE</option>
+                                    <option value="BS Accountancy">BS Accountancy</option>
+                                    <option value="BS Criminology">BS Criminology</option>
+                                    <option value="BS Office Administration">BS Office Administration</option>
+                                    <option value="Bachelor of Technical-Vocational Teacher Education">Bachelor of Technical-Vocational Teacher Education</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Submit Request</button>
+                        </form>
                     </div>
                 </div>
             </div>
-            <!-- Privacy Policy Modal -->
-<div class="modal fade" id="privacyPolicyModal" tabindex="-1" role="dialog" aria-labelledby="privacyPolicyModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="privacyPolicyModalLabel">Data Privacy Policy</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-               <p>I hereby affirm that all information supplied herein is complete and accurate. Withholding or giving false information will make me ineligible for admission or subject to dismissal. If admitted, I agree to abide by the established guidelines of Pamantasan ng Cabuyao.</p> 
 
-               <p> Further, I agree to collection and processing of my data for the purpose of processing request for school records at Pamantasan ng Cabuyao. I understand that my personal information is protected by RA 10173, Data Privacy Act of 2012, and that I am required to provide truthful information. I understand that my personal information shall not be shared or disclosed with other parties without consent unless the disclosure is required by, or in compliance with, applicable laws and regulations.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
         </div>
-    </div>
-</div>
 
-            <!-- Status Message -->
-            <div id="statusMessage" class="mt-4"></div>
-        </div>
-    </div>
-    
+        <script>
+            let cart = {}; // To store the cart items, with document ID as the key and name as the value
 
-    <script>
-        // Handle tapping anywhere on the landing overlay to proceed
-        document.getElementById('landingOverlay').addEventListener('click', function () {
-            const overlay = document.getElementById('landingOverlay');
-            overlay.classList.add('hidden');
+            function addToCart(documentId, documentName) {
+                // Check if the document is already in the cart
+                if (cart[documentId]) {
+                    cart[documentId].quantity++; // Increase quantity if already in the cart
+                } else {
+                    cart[documentId] = {
+                        name: documentName,
+                        quantity: 1
+                    }; // Add new document to the cart
+                }
+                updateCart(); // Update the cart display after adding the item
+            }
 
-            // Show main content after the transition
-            setTimeout(() => {
-                overlay.style.display = 'none';
-                document.getElementById('mainContent').classList.add('active');
-            }, 500); // Match the CSS transition duration
-        });
+            function decreaseQuantity(documentId) {
+                if (cart[documentId]) {
+                    if (cart[documentId].quantity > 1) {
+                        cart[documentId].quantity--; // Decrease quantity
+                    } else {
+                        removeFromCart(documentId); // Remove item if quantity is 1
+                    }
+                }
+                updateCart();
+            }
 
-        // Open modal and set document type
-        function openModal(documentType) {
-            document.getElementById('document_type').value = documentType;
-            $('#infoModal').modal('show');
-        }
+            function removeFromCart(documentId) {
+                delete cart[documentId]; // Remove item from cart
+                updateCart();
+            }
 
-        // Handle form submission
-        document.getElementById('documentRequestForm').addEventListener('submit', function (e) {
-            e.preventDefault(); // Prevent the default form submission
+            function updateCart() {
+                const cartTableBody = document.querySelector("#cartTable tbody");
+                cartTableBody.innerHTML = ""; // Clear the table
 
-            // Get form data
-            const formData = {
-                name: document.getElementById('name').value,
-                contact: document.getElementById('contact').value,
-                email: document.getElementById('email').value,
-                document_type: document.getElementById('document_type').value,
-                year_level: document.getElementById('year_level').value,
-            };
+                // Loop through cart items
+                for (const [documentId, documentDetails] of Object.entries(cart)) {
+                    const row = document.createElement("tr");
 
-            // Submit the form using Axios
-            axios.post('/request-document', formData)
-                .then(response => {
-                    // Display success message
-                    document.getElementById('statusMessage').innerHTML =
-                        `<div class="alert alert-success">Request submitted successfully. Your queue number is: ${response.data.queue_number}</div>`;
-                    $('#infoModal').modal('hide'); // Hide the modal
-                })
-                .catch(error => {
-                    // Display error message
-                    console.error('Error:', error); // Log full error to console for debugging
-                    document.getElementById('statusMessage').innerHTML =
-                        `<div class="alert alert-danger">An error occurred: ${error.response ? error.response.data.message : error.message}</div>`;
-                });
-        });
+                    row.innerHTML = `
+            <td>${documentDetails.name}</td> <!-- Display document name -->
+            <td>${documentDetails.quantity}</td>
+            <td>
+                <button class="btn btn-success btn-sm" onclick="addToCart(${documentId}, '${documentDetails.name}')">+</button>
+                <button class="btn btn-danger btn-sm" onclick="decreaseQuantity(${documentId})">-</button>
+                <button class="btn btn-secondary btn-sm" onclick="removeFromCart(${documentId})">Remove</button>
+            </td>
+        `;
+                    cartTableBody.appendChild(row);
+                }
+            }
 
-        // Set CSRF token for Axios
-        axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    </script>
 
-    <!-- include Bootstrap JS for modals -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+            // Handle "Proceed to Checkout" click
+            function proceedToCheckout() {
+                if (Object.keys(cart).length === 0) {
+                    alert("Your cart is empty. Please add documents first.");
+                    return;
+                }
+
+                // Show the checkout modal
+                $('#checkoutModal').modal('show');
+            }
+
+            // Handle form submission
+            document.getElementById("checkoutForm").addEventListener("submit", function(e) {
+                e.preventDefault(); // Prevent default form submission
+
+                // Check if cart is empty
+                if (Object.keys(cart).length === 0) {
+                    alert("Your cart is empty. Please add documents first.");
+                    return;
+                }
+
+                // Prepare the documents array for submission
+                const documents = Object.entries(cart).map(([type, quantity]) => ({
+                    document_type: type,
+                    quantity: quantity,
+                }));
+
+                // Collect user information from the form
+                const formData = {
+                    name: document.getElementById("name").value,
+                    contact: document.getElementById("contact").value,
+                    email: document.getElementById("email").value,
+                    year_level: document.getElementById("year_level").value,
+                    documents: documents, // Include cart data
+                };
+
+                console.log("Form Data to be Sent:", formData); // Debugging: Check data before sending
+
+                // Submit data to the server
+                axios.post("/request-document", formData)
+                    .then(response => {
+                        alert(`Request submitted successfully. Your queue number is: ${response.data.queue_number}`);
+                        location.reload(); // Reload the page after successful submission
+                    })
+                    .catch(error => {
+                        console.error("Error submitting form:", error); // Log error for debugging
+                        alert(`An error occurred: ${error.response ? error.response.data.message : error.message}`);
+                    });
+            });
+        </script>
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+
 </html>
