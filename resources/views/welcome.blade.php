@@ -223,10 +223,10 @@
                                 <label for="program">Year Level</label>
                                 <select class="form-control" id="year_level" name="year_level" required>
                                     <option value="" disabled selected>Select your year level</option>
-                                    <option value="SHS">1st year</option>
-                                    <option value="SHS">2nd year</option>
-                                    <option value="SHS">3rd year</option>
-                                    <option value="SHS">4th year</option>
+                                    <option value="1st year">1st year</option>
+                                    <option value="2nd year">2nd year</option>
+                                    <option value="3rd year">3rd year</option>
+                                    <option value="4th year">4th year</option>
                                     <option value="SHS">SHS</option>
                                 </select>
                             </div>
