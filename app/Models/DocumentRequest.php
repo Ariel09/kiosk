@@ -18,15 +18,13 @@ class DocumentRequest extends Model
      */
     protected $fillable = [
         'user_id',
-        'name',
-        'contact',
-        'email',
-        'document_id',
+        'program',
         'year_level',
         'status',
         'queue_number',
         'amount',
         'payment_date',
+        'remarks'
     ];
 
     /**
