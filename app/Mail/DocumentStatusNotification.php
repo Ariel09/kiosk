@@ -27,7 +27,7 @@ class DocumentStatusNotification extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Document Status Notification',
+            subject: 'Your document/s are ready to be claim. Bring your “Queue #” receipt for claiming the document/s',
         );
     }
 

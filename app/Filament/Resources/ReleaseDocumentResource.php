@@ -51,11 +51,12 @@ class ReleaseDocumentResource extends Resource
             ->schema([
                 Select::make('status')
                     ->options([
+                        'on_hold' => 'On Hold',
                         'paid' => 'Paid',
-                        'released' => 'Release',
+                        'decline' => 'Decline',
                     ])
                     ->required()
-                    ->default('paid'),
+                    ->default('on_hold'),
                 Select::make('document_id')
                     ->label('Select Document')
                     ->required()
