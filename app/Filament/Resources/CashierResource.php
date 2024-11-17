@@ -38,15 +38,16 @@ class CashierResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('queue_number')->label('Queue Number'),
-                TextColumn::make('user.full_name')
+                TextColumn::make('user.student.full_name')
                     ->label('Full Name')
                     ->formatStateUsing(function ($record) {
-                        $firstName = $record->user->firstname;
-                        $middleInitial = $record->user->middle_initial ? "{$record->user->middle_initial}." : '';
-                        $lastName = $record->user->lastname;
-                        $suffix = $record->user->suffix ? ", {$record->user->suffix}" : '';
+                        $student = $record->user?->student;
 
-                        return trim("{$firstName} {$middleInitial} {$lastName}{$suffix}");
+                        if ($student) {
+                            return $student->full_name; // Access the accessor from the Student model
+                        }
+
+                        return 'N/A'; // Fallback if no student is associated
                     }),
                 TextColumn::make('amount')->label('Amount')->money('Php'), // Adjust the currency if needed
             ])
