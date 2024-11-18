@@ -1,15 +1,21 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\RegistrarController;
 use App\Models\Document;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function ()
-{
+Route::get('/', function () {
     $documents = Document::all();
-    return view('welcome', compact('documents'));
-})->name('welcome');
+    $student = auth()->user()?->student; // Access the related student info
+    return view('welcome', compact('documents', 'student'));
+})->middleware('auth')->name('welcome');
+
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.form');
+Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
 Route::post('/request-document', [App\Http\Controllers\RegistrarController::class, 'requestDocument']);
 Route::get('/get-latest-queue-number', [RegistrarController::class, 'getLatestQueueNumber']);
 Route::get('/kiosk-terminal', [RegistrarController::class, 'showKiosk'])->name('kiosk.terminal');
