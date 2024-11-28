@@ -97,6 +97,100 @@
             align-items: center;
             border-radius: 10px;
         }
+
+        @media (max-width: 1024px) {
+        body {
+            font-size: 14px;
+        }
+
+        nav h4 {
+            font-size: 1.5rem;
+        }
+
+        .btn-custom {
+            font-size: 0.9rem;
+            padding: 5px 10px;
+        }
+
+        .document-selection h2 {
+            font-size: 1.4rem;
+        }
+
+        .card-button {
+            font-size: 1rem;
+            height: 4rem;
+        }
+
+        .cart-section h3 {
+            font-size: 1.2rem;
+        }
+
+        .cart-items table th,
+        .cart-items table td {
+            font-size: 0.9rem;
+        }
+
+        .cart-footer .btn {
+            font-size: 1rem;
+            padding: 10px 20px;
+        }
+
+        /* Adjust cart width slightly larger for tablets */
+        .document-selection {
+            flex: 1.8;
+        }
+
+        .cart-section {
+            flex: 1.2; /* Slightly increase width of cart section */
+        }
+    }
+
+    @media (max-width: 768px) {
+        body {
+            font-size: 13px;
+        }
+
+        nav h4 {
+            font-size: 1.4rem;
+        }
+
+        .btn-custom {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+        }
+
+        .document-selection h2 {
+            font-size: 1.3rem;
+        }
+
+        .card-button {
+            font-size: 0.9rem;
+            height: 3.5rem;
+        }
+
+        .cart-section h3 {
+            font-size: 1.1rem;
+        }
+
+        .cart-items table th,
+        .cart-items table td {
+            font-size: 0.8rem;
+        }
+
+        .cart-footer .btn {
+            font-size: 0.9rem;
+            padding: 8px 16px;
+        }
+
+        /* Further adjustment for smaller devices */
+        .document-selection {
+            flex: 1.6;
+        }
+
+        .cart-section {
+            flex: 1.4; /* Further increase cart section width */
+        }
+    }
     </style>
 </head>
 
