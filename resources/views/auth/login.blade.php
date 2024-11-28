@@ -14,6 +14,16 @@
         font-family: "Inter", sans-serif;
     }
 
+    .btn-login {
+        color: white;
+        background-color: #800505;
+    }
+
+    .btn-login:hover {
+        color: white;
+        background-color: #5c0202;
+    }
+
     /* Landing Overlay Styling */
     #landingOverlay {
             position: fixed;
@@ -61,7 +71,8 @@
     </div>
 
     <div class="container d-flex justify-content-center align-items-center vh-100">
-        <div class="card p-4 shadow-sm" style="width: 400px;">
+        <div class="card p-4 shadow-md" style="width: 400px;">
+            <img src="{{ asset('logo.png') }}" alt="Academy Logo" style="max-width: 20%; margin-bottom: 1rem;" class="d-block mx-auto">
             <h3 class="text-center mb-4">Student Login</h3>
             <form action="{{ route('login') }}" method="POST">
                 @csrf
@@ -95,7 +106,7 @@
                     </span>
                     @enderror
                 </div>
-                <button type="submit" class="btn btn-primary w-100">Login</button>
+                <button type="submit" class="btn btn-login w-100">Login</button>
             </form>
         </div>
     </div>
