@@ -120,19 +120,25 @@ public static function canCreate(): bool
         ];
     }
     protected function getTableActions(): array
-{
-    return [
-        Action::make('Confirm Payment')
-            ->action(function (DocumentRequest $record) {
-                $record->status = 'processing';
-                $record->save();
-
-                // Send email notification to the student
-                 //Mail::to($record->user->email)->send(new DocumentStatusNotification($record));
-
-                $this->notify('success', 'Payment confirmed, document is processing.');
-            })
-            ->requiresConfirmation(),
-    ];
-}
+    {
+        return [
+            Action::make('Confirm Payment')
+                ->action(function (DocumentRequest $record) {
+                    $record->status = 'processing';
+                    $record->save();
+    
+                    // Log the transaction
+                    \App\Models\TransactionHistory::create([
+                        'user_id' => $record->user_id,
+                        'transaction_type' => 'document_request',
+                        'document_type' => $record->document_type,
+                        'queue_number' => $record->queue_number,
+                        'transaction_date' => now(),
+                    ]);
+    
+                    $this->notify('success', 'Payment confirmed, document is processing.');
+                })
+                ->requiresConfirmation(),
+        ];
+    }
 }

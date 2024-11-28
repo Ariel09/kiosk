@@ -118,11 +118,25 @@ class RegistrarResource extends Resource
                     ])
                     ->action(function ($record, $data) {
                         Log::info('Record and Data', ['record' => $record, 'data' => $data]);
-
+                    
+                        // Update the registrar record
                         $record->update([
                             'status' => $data['status'],
                             'released_date' => $data['released_date'],
                         ]);
+                    
+                        // Log the transaction in TransactionHistory
+                        if ($data['status'] === 'released') {
+                            \App\Models\TransactionHistory::create([
+                                'user_id' => $record->user_id,
+                                'transaction_type' => 'release',
+                                'document_type' => $record->documents->pluck('document_name')->join(', '),
+                                'queue_number' => $record->queue_number,
+                                'amount' => $record->amount,
+                                'transaction_date' => now(),
+                            ]);
+                        }
+                    
                     }),
             ])
             ->bulkActions([

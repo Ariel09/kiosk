@@ -75,6 +75,7 @@ class ReleaseDocumentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+        
             ->columns([
                 TextColumn::make('id')
                     ->sortable()
@@ -104,7 +105,21 @@ class ReleaseDocumentResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->action(function (DocumentRequest $record) {
+                    $record->status = 'paid'; // Update the status
+                    $record->save();
+    
+                    // Log the payment transaction in TransactionHistory
+                    \App\Models\TransactionHistory::create([
+                        'user_id' => $record->user_id,
+                        'transaction_type' => 'payment',
+                        'amount' => $record->amount,
+                        'queue_number' => $record->queue_number,
+                        'transaction_date' => now(),
+                    ]);
+    
+                    $this->notify('success', 'Payment logged successfully.');
+                }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -132,4 +147,5 @@ class ReleaseDocumentResource extends Resource
             'edit' => Pages\EditReleaseDocument::route('/{record}/edit'),
         ];
     }
+
 }
