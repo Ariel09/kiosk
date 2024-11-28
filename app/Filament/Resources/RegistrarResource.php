@@ -71,6 +71,17 @@ class RegistrarResource extends Resource
                 //
             ])
             ->actions([
+                Action::make('sendEmail')
+                 ->label('Send Email')
+                ->icon('heroicon-o-envelope') // Mail icon
+                ->action(function ($record) {
+                    // Replace this with your email logic
+                    \Illuminate\Support\Facades\Mail::to($record->user->email)->send(new \App\Mail\DocumentReleasedNotification($record));
+
+                    $this->notify('success', 'Email sent successfully to ' . $record->user->email);
+                })
+                ->requiresConfirmation()
+                ->tooltip('Send email notification about document release'),
                 Action::make('view')
                     ->label('View Details')
                     ->modalHeading('Document Request Details')
