@@ -15,9 +15,12 @@ class DocumentRequestOverview extends BaseWidget
                 ->description('Total document requests')
                 ->icon('heroicon-o-document')
                 ->color('primary'),
-
-            Stat::make('Pending Requests', DocumentRequest::where('status', 'pending')->count())
-                ->description('Requests pending approval')
+                Stat::make('On Hold', DocumentRequest::where('status', 'on_hold')->count())
+                ->description('On hold')
+                ->icon('heroicon-o-clock')
+                ->color('warning'),
+            Stat::make('Processing Requests', DocumentRequest::where('status', 'pending')->count())
+                ->description('Pending For Release')
                 ->icon('heroicon-o-clock')
                 ->color('warning'),
 

@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -82,7 +84,29 @@
             flex-wrap: wrap;
             gap: 20px;
         }
-
+        #landingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 1000;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+            cursor: pointer; /* Make the whole overlay clickable */
+        }
+        #landingOverlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        #landingOverlay h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
         .card-item {
             flex: 1 1 calc(50% - 20px);
             min-width: 200px;
@@ -101,6 +125,12 @@
 </head>
 
 <body>
+      <!-- Landing Overlay -->
+      <div id="landingOverlay">
+        <img src="{{ asset('logo.png') }}" alt="Academy Logo" style="max-width: 20%; margin-bottom: 5rem;">
+        <h1>Hello, Welcome to the Saint Ignatius Academy!</h1>
+        <div id="continueButton">Tap the screen to proceed</div>
+    </div>
     <!-- Navigation Bar -->
     <nav class="d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
@@ -145,7 +175,7 @@
                 @endforeach
             </div>
         </div>
-
+                    
         <!-- Cart Section -->
         <div class="cart-section">
             <div class="cart-header">
@@ -255,6 +285,17 @@
         </div>
 
         <script>
+               // Handle tapping anywhere on the landing overlay to proceed
+        document.getElementById('landingOverlay').addEventListener('click', function () {
+            const overlay = document.getElementById('landingOverlay');
+            overlay.classList.add('hidden');
+
+            // Show main content after the transition
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                document.getElementById('mainContent').classList.add('active');
+            }, 500); // Match the CSS transition duration
+        });
             let cart = {}; // To store the cart items, with document ID as the key and name as the value
 
             function addToCart(documentId, documentName) {
