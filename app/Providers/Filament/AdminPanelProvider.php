@@ -38,7 +38,7 @@ class AdminPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Pages\Dashboard::class,
-                SendEmail::class,
+                // SendEmail::class,
             ])
             ->resources([
                 config('filament-logger.activity_resource')

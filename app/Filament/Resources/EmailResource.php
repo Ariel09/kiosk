@@ -4,6 +4,8 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\EmailResource\Pages;
 use App\Models\Email;
+use App\Models\Student;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -31,11 +33,18 @@ class EmailResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('to')
-                    ->label('Recipient')
-                    ->email()
-                    ->required()
-                    ->maxLength(255),
+                Forms\Components\Select::make('to')
+                ->label('Recipient')
+                ->options(function (string $search = null) {
+                    return User::query()
+                        ->when($search, function ($query, $search) {
+                            $query->where('email', 'like', "%{$search}%")
+                                ->orWhere('name', 'like', "%{$search}%");
+                        })
+                        ->pluck('email', 'id'); 
+                })
+                ->searchable() 
+                ->required(),
                 Forms\Components\TextInput::make('subject')
                     ->required()
                     ->maxLength(255),

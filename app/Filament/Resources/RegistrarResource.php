@@ -58,7 +58,7 @@ class RegistrarResource extends Resource
                 TextColumn::make('payment_date')
                     ->label('Payment Date'),
                 TextColumn::make('released_date')
-                    ->label('Release/d Date'),
+                    ->label('Released Date'),
                 BadgeColumn::make('status')
                     ->label('Status')
                     ->colors([
