@@ -15,7 +15,8 @@ class ActivityPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_activity');
+        // Allow users to view their own activity logs
+        return true; // Adjust permissions as needed
     }
 
     /**
@@ -23,7 +24,8 @@ class ActivityPolicy
      */
     public function view(User $user, Activity $activity): bool
     {
-        return $user->can('view_activity');
+        // Restrict access to logs the user caused
+        return $activity->causer_id === $user->id;
     }
 
     /**
@@ -39,7 +41,8 @@ class ActivityPolicy
      */
     public function update(User $user, Activity $activity): bool
     {
-        return $user->can('update_activity');
+        // Prevent updates unless explicitly allowed
+        return false;
     }
 
     /**
@@ -47,6 +50,7 @@ class ActivityPolicy
      */
     public function delete(User $user, Activity $activity): bool
     {
+        // Allow deletion only for specific roles or permissions
         return $user->can('delete_activity');
     }
 
@@ -63,7 +67,7 @@ class ActivityPolicy
      */
     public function forceDelete(User $user, Activity $activity): bool
     {
-        return $user->can('{{ ForceDelete }}');
+        return false; // Default to not allowing force delete
     }
 
     /**
@@ -71,7 +75,7 @@ class ActivityPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('{{ ForceDeleteAny }}');
+        return false; // Default to not allowing bulk force delete
     }
 
     /**
@@ -79,7 +83,7 @@ class ActivityPolicy
      */
     public function restore(User $user, Activity $activity): bool
     {
-        return $user->can('{{ Restore }}');
+        return false; // Default to not allowing restore
     }
 
     /**
@@ -87,7 +91,7 @@ class ActivityPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('{{ RestoreAny }}');
+        return false; // Default to not allowing bulk restore
     }
 
     /**
@@ -95,7 +99,7 @@ class ActivityPolicy
      */
     public function replicate(User $user, Activity $activity): bool
     {
-        return $user->can('{{ Replicate }}');
+        return false; // Default to not allowing replication
     }
 
     /**
@@ -103,6 +107,6 @@ class ActivityPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('{{ Reorder }}');
+        return false; // Default to not allowing reordering
     }
 }
