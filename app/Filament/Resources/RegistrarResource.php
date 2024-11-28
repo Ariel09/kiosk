@@ -14,6 +14,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\BadgeColumn;
@@ -75,23 +76,31 @@ class RegistrarResource extends Resource
             ])
             ->actions([
                 Action::make('send_email')
-                ->label('Send Email')
-                ->icon('heroicon-o-envelope') // Mail icon
-                ->action(function ($record) {
-                    // Check if the user and email exist
-                    if ($record->user && $record->user->email) {
-                        // Send the email
-                        Mail::to($record->user->email)->send(new DocumentReleasedNotification($record));
-            
-                        // Notify the user of success
-                        Filament::notify('success', 'Email sent successfully to ' . $record->user->email);
-                    } else {
-                        // Notify the user of failure
-                        Filament::notify('danger', 'No valid email found for the user.');
-                    }
-                })
-                ->requiresConfirmation()
-                ->tooltip('Send email notification about document release'),
+    ->label('Send Email')
+    ->icon('heroicon-o-envelope') // Mail icon
+    ->action(function ($record) {
+        // Check if the user and email exist
+        if ($record->user && $record->user->email) {
+            // Send the email
+            Mail::to($record->user->email)->send(new DocumentReleasedNotification($record));
+
+            // Notify the user of success
+            Notification::make()
+                ->title('Email Sent')
+                ->success()
+                ->body('Email successfully sent to ' . $record->user->email)
+                ->send();
+        } else {
+            // Notify the user of failure
+            Notification::make()
+                ->title('Failed to Send Email')
+                ->danger()
+                ->body('No valid email found for the user.')
+                ->send();
+        }
+    })
+    ->requiresConfirmation()
+    ->tooltip('Send email notification about document release'),
                 Action::make('view')
                     ->label('View Details')
                     ->modalHeading('Document Request Details')
