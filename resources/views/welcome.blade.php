@@ -10,6 +10,43 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        /* Landing Overlay Styling */
+        #landingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 1000;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+            cursor: pointer; /* Make the whole overlay clickable */
+        }
+        #landingOverlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        #landingOverlay h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+/* Main content hidden initially */
+        #mainContent {
+            display: none;
+            height: 100%;
+            overflow: auto;
+        }
+        /* Show main content when overlay is hidden */
+        #mainContent.active {
+            display: block;
+        }
+
+
         body {
             font-family: "Inter", sans-serif;
             margin: 0;
@@ -26,6 +63,15 @@
 
         nav .btn-custom {
             color: white;
+            border: 1px solid white;
+            border-radius: 5px;
+            padding: 5px 10px;
+            margin-left: 10px;
+            text-decoration: none;
+        }
+
+        nav .btn-logout {
+            color: gray;
             border: 1px solid white;
             border-radius: 5px;
             padding: 5px 10px;
@@ -195,6 +241,14 @@
 </head>
 
 <body>
+
+    <!-- Landing Overlay -->
+    <div id="landingOverlay">
+            <img src="{{ asset('logo.png') }}" alt="Academy Logo" style="max-width: 20%; margin-bottom: 5rem;">
+            <h1>Hello, Welcome to the Saint Ignatius Academy!</h1>
+            <div id="continueButton">Tap the screen to proceed</div>
+        </div>
+
     <!-- Navigation Bar -->
     <nav class="d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
@@ -211,7 +265,7 @@
                 @endif
                 <form method="POST" action="{{ route('logout') }}" class="ml-3">
                     @csrf
-                    <button type="submit" class="btn-custom">Logout</button>
+                    <button type="submit" class="btn-logout">Logout</button>
                 </form>
                 @else
                 <a href="{{ route('filament.admin.auth.login') }}" class="btn-custom">LOGIN</a>
@@ -343,23 +397,36 @@
         </div>
 
         <script>
-    let cart = {}; // To store the cart items, with document ID as the key and name as the value
 
-    function addToCart(documentId, documentName, documentPrice) {
-        // Check if the document is already in the cart
-        if (cart[documentId]) {
-            cart[documentId].quantity++; // Increase quantity if already in the cart
-            cart[documentId].totalPrice += documentPrice; // Update total price
-        } else {
-            cart[documentId] = {
-                name: documentName,
-                price: documentPrice,
-                quantity: 1,
-                totalPrice: documentPrice
-            }; // Add new document to the cart
+            // Handle tapping anywhere on the landing overlay to proceed
+            document.getElementById('landingOverlay').addEventListener('click', function () {
+            const overlay = document.getElementById('landingOverlay');
+            overlay.classList.add('hidden');
+
+            // Show main content after the transition
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                document.getElementById('mainContent').classList.add('active');
+            }, 500); // Match the CSS transition duration
+        });
+
+        let cart = {}; // To store the cart items, with document ID as the key and name as the value
+
+        function addToCart(documentId, documentName, documentPrice) {
+            // Check if the document is already in the cart
+            if (cart[documentId]) {
+                cart[documentId].quantity++; // Increase quantity if already in the cart
+                cart[documentId].totalPrice += documentPrice; // Update total price
+            } else {
+                cart[documentId] = {
+                    name: documentName,
+                    price: documentPrice,
+                    quantity: 1,
+                    totalPrice: documentPrice
+                }; // Add new document to the cart
+            }
+            updateCart(); // Update the cart display after adding the item
         }
-        updateCart(); // Update the cart display after adding the item
-    }
 
     function decreaseQuantity(documentId) {
         if (cart[documentId]) {

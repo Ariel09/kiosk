@@ -6,7 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
 </head>
+
+<style>
+    body {
+        font-family: "Inter", sans-serif;
+    }
+</style>
 
 <body>
     <div class="container d-flex justify-content-center align-items-center vh-100">
