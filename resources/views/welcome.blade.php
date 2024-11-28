@@ -90,7 +90,7 @@
 
         .card-button {
             width: 100%;
-            height: 150px;
+            height: 5rem;
             font-size: 1.2rem;
             display: flex;
             justify-content: center;
@@ -136,13 +136,14 @@
         <div class="document-selection">
             <h2>Select Your Documents</h2>
             <div class="card-container mt-4">
-                @foreach ($documents as $document)
-                <div class="card-item">
-                    <button class="btn btn-light border card-button" onclick="addToCart({{ $document->id }}, '{{ $document->document_name }}')">
-                        {{ $document->document_name }}
-                    </button>
-                </div>
-                @endforeach
+            @foreach ($documents as $document)
+            <div class="card-item">
+                <button class="btn btn-light border card-button" onclick="addToCart({{ $document->id }}, '{{ $document->document_name }}', {{ $document->price }})">
+                    {{ $document->document_name }} - ₱{{ number_format($document->price, 2) }}
+                </button>
+            </div>
+            @endforeach
+
             </div>
         </div>
 
@@ -152,18 +153,20 @@
                 <h3>Your Cart</h3>
             </div>
             <div class="cart-items">
-                <table class="table table-bordered" id="cartTable">
-                    <thead>
-                        <tr>
-                            <th>Document</th>
-                            <th>Quantity</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Cart items will be dynamically inserted here -->
-                    </tbody>
-                </table>
+            <table class="table table-bordered" id="cartTable">
+                <thead>
+                    <tr>
+                        <th>Document</th>
+                        <th>Quantity</th>
+                        <th>Price</th> <!-- Added title for the price column -->
+                        <th>Actions</th> <!-- Title for the actions column -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Cart items will be dynamically inserted here -->
+                </tbody>
+            </table>
+
             </div>
             <div class="cart-footer">
                 <button class="btn btn-primary btn-lg" onclick="proceedToCheckout()">Proceed to Checkout</button>
@@ -221,7 +224,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="program">Year Level</label>
-                                <select class="form-control" id="year_level" name="year_level" required>
+                                <select class="form-control" id="year_level" name="year_level" onchange="updatePrograms()" required>
                                     <option value="" disabled selected>Select your year level</option>
                                     <option value="1st year">1st year</option>
                                     <option value="2nd year">2nd year</option>
@@ -234,16 +237,7 @@
                                 <label for="program">Program</label>
                                 <select class="form-control" id="program" name="program" required>
                                     <option value="" disabled selected>Select program</option>
-                                    <option value="SHS">SHS: GAS</option>
-                                    <option value="SHS">HUMMS</option>
-                                    <option value="SHS">ABM</option>
-                                    <option value="SHS">STEM</option>
-                                    <option value="SHS">ICT</option>
-                                    <option value="SHS">HE</option>
-                                    <option value="BS Accountancy">BS Accountancy</option>
-                                    <option value="BS Criminology">BS Criminology</option>
-                                    <option value="BS Office Administration">BS Office Administration</option>
-                                    <option value="Bachelor of Technical-Vocational Teacher Education">Bachelor of Technical-Vocational Teacher Education</option>
+                                    <!-- Program options will be populated dynamically -->
                                 </select>
                             </div>
                             <button type="submit" class="btn btn-primary btn-block">Submit Request</button>
@@ -255,114 +249,198 @@
         </div>
 
         <script>
-            let cart = {}; // To store the cart items, with document ID as the key and name as the value
+    let cart = {}; // To store the cart items, with document ID as the key and name as the value
 
-            function addToCart(documentId, documentName) {
-                // Check if the document is already in the cart
-                if (cart[documentId]) {
-                    cart[documentId].quantity++; // Increase quantity if already in the cart
-                } else {
-                    cart[documentId] = {
-                        name: documentName,
-                        quantity: 1
-                    }; // Add new document to the cart
-                }
-                updateCart(); // Update the cart display after adding the item
+    function addToCart(documentId, documentName, documentPrice) {
+        // Check if the document is already in the cart
+        if (cart[documentId]) {
+            cart[documentId].quantity++; // Increase quantity if already in the cart
+            cart[documentId].totalPrice += documentPrice; // Update total price
+        } else {
+            cart[documentId] = {
+                name: documentName,
+                price: documentPrice,
+                quantity: 1,
+                totalPrice: documentPrice
+            }; // Add new document to the cart
+        }
+        updateCart(); // Update the cart display after adding the item
+    }
+
+    function decreaseQuantity(documentId) {
+        if (cart[documentId]) {
+            if (cart[documentId].quantity > 1) {
+                cart[documentId].quantity--; // Decrease quantity
+                cart[documentId].totalPrice -= cart[documentId].price; // Adjust total price
+            } else {
+                removeFromCart(documentId); // Remove item if quantity is 1
             }
+        }
+        updateCart();
+    }
 
-            function decreaseQuantity(documentId) {
-                if (cart[documentId]) {
-                    if (cart[documentId].quantity > 1) {
-                        cart[documentId].quantity--; // Decrease quantity
-                    } else {
-                        removeFromCart(documentId); // Remove item if quantity is 1
-                    }
-                }
-                updateCart();
-            }
+    function removeFromCart(documentId) {
+        delete cart[documentId]; // Remove item from cart
+        updateCart();
+    }
 
-            function removeFromCart(documentId) {
-                delete cart[documentId]; // Remove item from cart
-                updateCart();
-            }
+    function updateCart() {
+    const cartTableBody = document.querySelector("#cartTable tbody");
+    cartTableBody.innerHTML = ""; // Clear the table
+    let grandTotal = 0; // Initialize grand total
 
-            function updateCart() {
-                const cartTableBody = document.querySelector("#cartTable tbody");
-                cartTableBody.innerHTML = ""; // Clear the table
+    // Loop through cart items
+    for (const [documentId, documentDetails] of Object.entries(cart)) {
+        const row = document.createElement("tr");
 
-                // Loop through cart items
-                for (const [documentId, documentDetails] of Object.entries(cart)) {
-                    const row = document.createElement("tr");
-
-                    row.innerHTML = `
+        row.innerHTML = `
             <td>${documentDetails.name}</td> <!-- Display document name -->
             <td>${documentDetails.quantity}</td>
+            <td>₱${documentDetails.totalPrice.toFixed(2)}</td> <!-- Show price per document -->
             <td>
-                <button class="btn btn-success btn-sm" onclick="addToCart(${documentId}, '${documentDetails.name}')">+</button>
+                <button class="btn btn-success btn-sm" onclick="addToCart(${documentId}, '${documentDetails.name}', ${documentDetails.price})">+</button>
                 <button class="btn btn-danger btn-sm" onclick="decreaseQuantity(${documentId})">-</button>
                 <button class="btn btn-secondary btn-sm" onclick="removeFromCart(${documentId})">Remove</button>
             </td>
         `;
-                    cartTableBody.appendChild(row);
-                }
-            }
+        cartTableBody.appendChild(row);
+        grandTotal += documentDetails.totalPrice; // Update grand total
+    }
+
+    // Display grand total
+    const totalRow = document.createElement("tr");
+    totalRow.innerHTML = `
+        <td colspan="2"><strong>Total</strong></td>
+        <td><strong>₱${grandTotal.toFixed(2)}</strong></td>
+        <td></td> <!-- Empty column for alignment -->
+    `;
+    cartTableBody.appendChild(totalRow);
+}
 
 
-            // Handle "Proceed to Checkout" click
-            function proceedToCheckout() {
-                if (Object.keys(cart).length === 0) {
-                    alert("Your cart is empty. Please add documents first.");
-                    return;
-                }
+    // Adjusting the "Proceed to Checkout" button
+    function proceedToCheckout() {
+        if (Object.keys(cart).length === 0) {
+            alert("Your cart is empty. Please add documents first.");
+            return;
+        }
 
-                // Show the checkout modal
-                $('#privacyPolicyModal').modal('show');
-            }
+        // Show the checkout modal
+        $('#privacyPolicyModal').modal('show');
+    }
 
-            // Handle Agree button click inside Privacy Policy Modal
-            document.getElementById("agreePrivacyPolicy").addEventListener("click", function() {
-                $('#privacyPolicyModal').modal('hide'); // Hide Privacy Policy Modal
-                $('#checkoutModal').modal('show'); // Show Checkout Modal
+    // Handle Agree button click inside Privacy Policy Modal
+    document.getElementById("agreePrivacyPolicy").addEventListener("click", function() {
+        $('#privacyPolicyModal').modal('hide'); // Hide Privacy Policy Modal
+        $('#checkoutModal').modal('show'); // Show Checkout Modal
+    });
+
+    // Handle form submission
+    document.getElementById("checkoutForm").addEventListener("submit", function (e) {
+        e.preventDefault(); // Prevent default form submission
+
+        // Check if cart is empty
+        if (Object.keys(cart).length === 0) {
+            alert("Your cart is empty. Please add documents first.");
+            return;
+        }
+
+        // Prepare the documents array for submission
+        const documents = Object.entries(cart).map(([type, quantity]) => ({
+            document_type: type,
+            quantity: quantity,
+        }));
+
+    // Collect user information from the form
+    const formData = {
+        user_id: document.getElementById("user_id").value, // Add user_id here
+        name: document.getElementById("name").value,
+        contact: document.getElementById("contact").value,
+        email: document.getElementById("email").value,
+        year_level: document.getElementById("year_level").value,
+        program: document.getElementById("program").value,
+        documents: Object.entries(cart).map(([id, details]) => ({
+            document_type: id,
+            quantity: details.quantity,
+        })),
+    };
+
+
+    console.log("Form Data to be Sent:", formData); // Debugging: Check data before sending
+
+    // Submit data to the server
+    axios.post("/request-document", formData)
+        .then(response => {
+            alert(`Request submitted successfully. Your queue number is: ${response.data.queue_number}`);
+            location.reload(); // Reload the page after successful submission
+        })
+        .catch(error => {
+            console.error("Error submitting form:", error); // Log error for debugging
+            alert(`An error occurred: ${error.response ? error.response.data.message : error.message}`);
+        });
+    });
+
+
+    //Handle the conditional programs depending on their year Level
+
+    function updatePrograms() {
+            const yearLevel = document.getElementById("year_level").value; // Get the selected year level
+            const programSelect = document.getElementById("program"); // Get the program dropdown
+            programSelect.innerHTML = '<option value="" disabled selected>Select program</option>'; // Reset options
+
+            // Define programs based on year level
+            const programsByYearLevel = {
+                "1st year": [
+                    { value: "BS Accountancy", text: "BS Accountancy (BSA)" },
+                    { value: "BS Criminology", text: "BS Criminology (BSC)" },
+                    { value: "BS Office Administration", text: "BS Office Administration (BSOA)" },
+                    { value: "BS Psychology", text: "BS Psychology (BSP)" },
+                    { value: "Bachelor of Technical-Vocational Teacher Education", text: "Bachelor of Technical-Vocational Teacher Education (BTVTEd)" },
+                ],
+                "2nd year": [
+                    { value: "BS Accountancy", text: "BS Accountancy (BSA)" },
+                    { value: "BS Criminology", text: "BS Criminology (BSC)" },
+                    { value: "BS Office Administration", text: "BS Office Administration (BSOA)" },
+                    { value: "BS Psychology", text: "BS Psychology (BSP)" },
+                    { value: "Bachelor of Technical-Vocational Teacher Education", text: "Bachelor of Technical-Vocational Teacher Education (BTVTEd)" },
+                ],
+                "3rd year": [
+                    { value: "BS Accountancy", text: "BS Accountancy (BSA)" },
+                    { value: "BS Criminology", text: "BS Criminology (BSC)" },
+                    { value: "BS Office Administration", text: "BS Office Administration (BSOA)" },
+                    { value: "BS Psychology", text: "BS Psychology (BSP)" },
+                    { value: "Bachelor of Technical-Vocational Teacher Education", text: "Bachelor of Technical-Vocational Teacher Education (BTVTEd)" },
+                ],
+                "4th year": [
+                    { value: "BS Accountancy", text: "BS Accountancy (BSA)" },
+                    { value: "BS Criminology", text: "BS Criminology (BSC)" },
+                    { value: "BS Office Administration", text: "BS Office Administration (BSOA)" },
+                    { value: "BS Psychology", text: "BS Psychology (BSP)" },
+                    { value: "Bachelor of Technical-Vocational Teacher Education", text: "Bachelor of Technical-Vocational Teacher Education (BTVTEd)" },
+                ],
+                SHS: [
+                    { value: "GAS", text: "GAS" },
+                    { value: "HUMMS", text: "HUMMS" },
+                    { value: "ABM", text: "ABM" },
+                    { value: "STEM", text: "STEM" },
+                    { value: "ICT", text: "ICT" },
+                    { value: "HE", text: "HE" },
+                ],
+            };
+
+        // Populate the program dropdown with the relevant options
+        if (programsByYearLevel[yearLevel]) {
+            programsByYearLevel[yearLevel].forEach((program) => {
+                const option = document.createElement("option");
+                option.value = program.value;
+                option.textContent = program.text;
+                programSelect.appendChild(option);
             });
+        }
+    }
 
-            // Handle form submission
-            document.getElementById("checkoutForm").addEventListener("submit", function(e) {
-                e.preventDefault(); // Prevent default form submission
+</script>
 
-                // Check if cart is empty
-                if (Object.keys(cart).length === 0) {
-                    alert("Your cart is empty. Please add documents first.");
-                    return;
-                }
-
-                // Prepare the documents array for submission
-                const documents = Object.entries(cart).map(([type, quantity]) => ({
-                    document_type: type,
-                    quantity: quantity,
-                }));
-
-                // Collect user information from the form
-                const formData = {
-                    user_id: document.getElementById("user_id").value,
-                    year_level: document.getElementById("year_level").value,
-                    program: document.getElementById("program").value,
-                    documents: documents, // Include cart data
-                };
-
-                console.log("Form Data to be Sent:", formData); // Debugging: Check data before sending
-
-                // Submit data to the server
-                axios.post("/request-document", formData)
-                    .then(response => {
-                        alert(`Request submitted successfully. Your queue number is: ${response.data.queue_number}`);
-                        location.reload(); // Reload the page after successful submission
-                    })
-                    .catch(error => {
-                        console.error("Error submitting form:", error); // Log error for debugging
-                        alert(`An error occurred: ${error.response ? error.response.data.message : error.message}`);
-                    });
-            });
-        </script>
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
