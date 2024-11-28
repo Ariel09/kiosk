@@ -4,8 +4,10 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\RegistrarResource\Pages;
 use App\Filament\Resources\RegistrarResource\RelationManagers;
+use App\Mail\DocumentReleasedNotification;
 use App\Models\Registrar;
 use Carbon\Carbon;
+use Filament\Facades\Filament;
 use Filament\Tables\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
@@ -21,6 +23,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class RegistrarResource extends Resource
 {
@@ -71,14 +74,21 @@ class RegistrarResource extends Resource
                 //
             ])
             ->actions([
-                Action::make('sendEmail')
-                 ->label('Send Email')
+                Action::make('send_email')
+                ->label('Send Email')
                 ->icon('heroicon-o-envelope') // Mail icon
                 ->action(function ($record) {
-                    // Replace this with your email logic
-                    \Illuminate\Support\Facades\Mail::to($record->user->email)->send(new \App\Mail\DocumentReleasedNotification($record));
-
-                    $this->notify('success', 'Email sent successfully to ' . $record->user->email);
+                    // Check if the user and email exist
+                    if ($record->user && $record->user->email) {
+                        // Send the email
+                        Mail::to($record->user->email)->send(new DocumentReleasedNotification($record));
+            
+                        // Notify the user of success
+                        Filament::notify('success', 'Email sent successfully to ' . $record->user->email);
+                    } else {
+                        // Notify the user of failure
+                        Filament::notify('danger', 'No valid email found for the user.');
+                    }
                 })
                 ->requiresConfirmation()
                 ->tooltip('Send email notification about document release'),
