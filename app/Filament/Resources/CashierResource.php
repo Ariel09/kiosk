@@ -7,10 +7,12 @@ use App\Filament\Resources\CashierResource\RelationManagers;
 use App\Models\Cashier;
 use Filament\Tables\Actions\Action;
 use Filament\Forms;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -70,10 +72,30 @@ class CashierResource extends Resource
                             ->default(fn($record) => $record->amount)
                             ->numeric(),
                         // Use a Select or TextInput to display document names
-                        Textarea::make('documents')
+                        Repeater::make('documentRequestDocuments') // Field to display/edit documents
                             ->label('Documents')
-                            ->default(fn($record) => $record->documents->pluck('document_name')->join(', '))
-                            ->disabled(), // Disabled since it's for display only
+                            ->relationship('documentRequestDocuments') // Assuming there is a relationship
+                            ->schema([
+                                Select::make('document_id')
+                                    ->label('Document Name')
+                                    ->relationship('document', 'document_name'),
+                                TextInput::make('quantity')
+                                    ->label('Quantity'),
+                                TextInput::make('price')
+                                    ->label('Total Price')
+                                    ->disabled(), // Calculated automatically
+                            ])
+                            ->mutateRelationshipDataBeforeFillUsing(function ($data) {
+                                // Format the data as needed, e.g., transforming pivot fields
+                                return $data->map(function ($record) {
+                                    return [
+                                        'document_id' => $record->document_id,
+                                        'quantity' => $record->quantity,
+                                        'price' => $record->price,
+                                    ];
+                                });
+                            })
+                            ->columns(3), // Arranges fields in a table-like structure
                         TextInput::make('remarks')
                             ->label('Remarks')
                             ->visible(fn($get) => $get('status') === 'decline') // Show this field only if status is 'disapproved'

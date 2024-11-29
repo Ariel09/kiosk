@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class DocumentRequest extends Model
 {
@@ -38,5 +39,10 @@ class DocumentRequest extends Model
     public function documents()
     {
         return $this->belongsToMany(Document::class, 'document_request_document');
+    }
+
+    public function documentRequestDocuments(): HasMany
+    {
+        return $this->hasMany(DocumentRequestDocument::class);
     }
 }

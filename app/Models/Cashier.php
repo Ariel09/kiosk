@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Cashier extends Model
 {
@@ -40,5 +41,10 @@ class Cashier extends Model
     public function documents()
     {
         return $this->belongsToMany(Document::class, 'document_request_document', 'document_request_id', 'document_id');
+    }
+
+    public function documentRequestDocuments(): HasMany
+    {
+        return $this->hasMany(DocumentRequestDocument::class, 'document_request_id');
     }
 }
