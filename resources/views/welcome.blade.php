@@ -8,9 +8,9 @@
     <title>Kiosk Document Request</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
-
         body {
             font-family: "Inter", sans-serif;
             margin: 0;
@@ -109,98 +109,100 @@
         }
 
         @media (max-width: 1024px) {
-        body {
-            font-size: 14px;
+            body {
+                font-size: 14px;
+            }
+
+            nav h4 {
+                font-size: 1.5rem;
+            }
+
+            .btn-custom {
+                font-size: 0.9rem;
+                padding: 5px 10px;
+            }
+
+            .document-selection h2 {
+                font-size: 1.4rem;
+            }
+
+            .card-button {
+                font-size: 1rem;
+                height: 4rem;
+            }
+
+            .cart-section h3 {
+                font-size: 1.2rem;
+            }
+
+            .cart-items table th,
+            .cart-items table td {
+                font-size: 0.9rem;
+            }
+
+            .cart-footer .btn {
+                font-size: 1rem;
+                padding: 10px 20px;
+            }
+
+            /* Adjust cart width slightly larger for tablets */
+            .document-selection {
+                flex: 1.8;
+            }
+
+            .cart-section {
+                flex: 1.2;
+                /* Slightly increase width of cart section */
+            }
         }
 
-        nav h4 {
-            font-size: 1.5rem;
-        }
+        @media (max-width: 768px) {
+            body {
+                font-size: 13px;
+            }
 
-        .btn-custom {
-            font-size: 0.9rem;
-            padding: 5px 10px;
-        }
+            nav h4 {
+                font-size: 1.4rem;
+            }
 
-        .document-selection h2 {
-            font-size: 1.4rem;
-        }
+            .btn-custom {
+                font-size: 0.8rem;
+                padding: 4px 8px;
+            }
 
-        .card-button {
-            font-size: 1rem;
-            height: 4rem;
-        }
+            .document-selection h2 {
+                font-size: 1.3rem;
+            }
 
-        .cart-section h3 {
-            font-size: 1.2rem;
-        }
+            .card-button {
+                font-size: 0.9rem;
+                height: 3.5rem;
+            }
 
-        .cart-items table th,
-        .cart-items table td {
-            font-size: 0.9rem;
-        }
+            .cart-section h3 {
+                font-size: 1.1rem;
+            }
 
-        .cart-footer .btn {
-            font-size: 1rem;
-            padding: 10px 20px;
-        }
+            .cart-items table th,
+            .cart-items table td {
+                font-size: 0.8rem;
+            }
 
-        /* Adjust cart width slightly larger for tablets */
-        .document-selection {
-            flex: 1.8;
-        }
+            .cart-footer .btn {
+                font-size: 0.9rem;
+                padding: 8px 16px;
+            }
 
-        .cart-section {
-            flex: 1.2; /* Slightly increase width of cart section */
-        }
-    }
+            /* Further adjustment for smaller devices */
+            .document-selection {
+                flex: 1.6;
+            }
 
-    @media (max-width: 768px) {
-        body {
-            font-size: 13px;
+            .cart-section {
+                flex: 1.4;
+                /* Further increase cart section width */
+            }
         }
-
-        nav h4 {
-            font-size: 1.4rem;
-        }
-
-        .btn-custom {
-            font-size: 0.8rem;
-            padding: 4px 8px;
-        }
-
-        .document-selection h2 {
-            font-size: 1.3rem;
-        }
-
-        .card-button {
-            font-size: 0.9rem;
-            height: 3.5rem;
-        }
-
-        .cart-section h3 {
-            font-size: 1.1rem;
-        }
-
-        .cart-items table th,
-        .cart-items table td {
-            font-size: 0.8rem;
-        }
-
-        .cart-footer .btn {
-            font-size: 0.9rem;
-            padding: 8px 16px;
-        }
-
-        /* Further adjustment for smaller devices */
-        .document-selection {
-            flex: 1.6;
-        }
-
-        .cart-section {
-            flex: 1.4; /* Further increase cart section width */
-        }
-    }
     </style>
 </head>
 
@@ -241,13 +243,13 @@
         <div class="document-selection">
             <h2>Select Your Documents</h2>
             <div class="card-container mt-4">
-            @foreach ($documents as $document)
-            <div class="card-item">
-                <button class="btn btn-light border card-button" onclick="addToCart({{ $document->id }}, '{{ $document->document_name }}', {{ $document->price }})">
-                    {{ $document->document_name }} - ₱{{ number_format($document->price, 2) }}
-                </button>
-            </div>
-            @endforeach
+                @foreach ($documents as $document)
+                <div class="card-item">
+                    <button class="btn btn-light border card-button" onclick="addToCart({{ $document->id }}, '{{ $document->document_name }}', {{ $document->price }})">
+                        {{ $document->document_name }} - ₱{{ number_format($document->price, 2) }}
+                    </button>
+                </div>
+                @endforeach
 
             </div>
         </div>
@@ -258,19 +260,19 @@
                 <h3>Your Cart</h3>
             </div>
             <div class="cart-items">
-            <table class="table table-bordered" id="cartTable">
-                <thead>
-                    <tr>
-                        <th>Document</th>
-                        <th>Quantity</th>
-                        <th>Price</th> <!-- Added title for the price column -->
-                        <th>Actions</th> <!-- Title for the actions column -->
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Cart items will be dynamically inserted here -->
-                </tbody>
-            </table>
+                <table class="table table-bordered" id="cartTable">
+                    <thead>
+                        <tr>
+                            <th>Document</th>
+                            <th>Quantity</th>
+                            <th>Price</th> <!-- Added title for the price column -->
+                            <th>Actions</th> <!-- Title for the actions column -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Cart items will be dynamically inserted here -->
+                    </tbody>
+                </table>
 
             </div>
             <div class="cart-footer">
@@ -354,52 +356,51 @@
         </div>
 
         <script>
+            let cart = {}; // To store the cart items, with document ID as the key and name as the value
 
-        let cart = {}; // To store the cart items, with document ID as the key and name as the value
-
-        function addToCart(documentId, documentName, documentPrice) {
-            // Check if the document is already in the cart
-            if (cart[documentId]) {
-                cart[documentId].quantity++; // Increase quantity if already in the cart
-                cart[documentId].totalPrice += documentPrice; // Update total price
-            } else {
-                cart[documentId] = {
-                    name: documentName,
-                    price: documentPrice,
-                    quantity: 1,
-                    totalPrice: documentPrice
-                }; // Add new document to the cart
+            function addToCart(documentId, documentName, documentPrice) {
+                // Check if the document is already in the cart
+                if (cart[documentId]) {
+                    cart[documentId].quantity++; // Increase quantity if already in the cart
+                    cart[documentId].totalPrice += documentPrice; // Update total price
+                } else {
+                    cart[documentId] = {
+                        name: documentName,
+                        price: documentPrice,
+                        quantity: 1,
+                        totalPrice: documentPrice
+                    }; // Add new document to the cart
+                }
+                updateCart(); // Update the cart display after adding the item
             }
-            updateCart(); // Update the cart display after adding the item
-        }
 
-    function decreaseQuantity(documentId) {
-        if (cart[documentId]) {
-            if (cart[documentId].quantity > 1) {
-                cart[documentId].quantity--; // Decrease quantity
-                cart[documentId].totalPrice -= cart[documentId].price; // Adjust total price
-            } else {
-                removeFromCart(documentId); // Remove item if quantity is 1
+            function decreaseQuantity(documentId) {
+                if (cart[documentId]) {
+                    if (cart[documentId].quantity > 1) {
+                        cart[documentId].quantity--; // Decrease quantity
+                        cart[documentId].totalPrice -= cart[documentId].price; // Adjust total price
+                    } else {
+                        removeFromCart(documentId); // Remove item if quantity is 1
+                    }
+                }
+                updateCart();
             }
-        }
-        updateCart();
-    }
 
-    function removeFromCart(documentId) {
-        delete cart[documentId]; // Remove item from cart
-        updateCart();
-    }
+            function removeFromCart(documentId) {
+                delete cart[documentId]; // Remove item from cart
+                updateCart();
+            }
 
-    function updateCart() {
-    const cartTableBody = document.querySelector("#cartTable tbody");
-    cartTableBody.innerHTML = ""; // Clear the table
-    let grandTotal = 0; // Initialize grand total
+            function updateCart() {
+                const cartTableBody = document.querySelector("#cartTable tbody");
+                cartTableBody.innerHTML = ""; // Clear the table
+                let grandTotal = 0; // Initialize grand total
 
-    // Loop through cart items
-    for (const [documentId, documentDetails] of Object.entries(cart)) {
-        const row = document.createElement("tr");
+                // Loop through cart items
+                for (const [documentId, documentDetails] of Object.entries(cart)) {
+                    const row = document.createElement("tr");
 
-        row.innerHTML = `
+                    row.innerHTML = `
             <td>${documentDetails.name}</td> <!-- Display document name -->
             <td>${documentDetails.quantity}</td>
             <td>₱${documentDetails.totalPrice.toFixed(2)}</td> <!-- Show price per document -->
@@ -409,143 +410,226 @@
                 <button class="btn btn-secondary btn-sm" onclick="removeFromCart(${documentId})">Remove</button>
             </td>
         `;
-        cartTableBody.appendChild(row);
-        grandTotal += documentDetails.totalPrice; // Update grand total
-    }
+                    cartTableBody.appendChild(row);
+                    grandTotal += documentDetails.totalPrice; // Update grand total
+                }
 
-    // Display grand total
-    const totalRow = document.createElement("tr");
-    totalRow.innerHTML = `
+                // Display grand total
+                const totalRow = document.createElement("tr");
+                totalRow.innerHTML = `
         <td colspan="2"><strong>Total</strong></td>
         <td><strong>₱${grandTotal.toFixed(2)}</strong></td>
         <td></td> <!-- Empty column for alignment -->
     `;
-    cartTableBody.appendChild(totalRow);
-}
+                cartTableBody.appendChild(totalRow);
+            }
 
 
-    // Adjusting the "Proceed to Checkout" button
-    function proceedToCheckout() {
-        if (Object.keys(cart).length === 0) {
-            alert("Your cart is empty. Please add documents first.");
-            return;
-        }
+            // Adjusting the "Proceed to Checkout" button
+            function proceedToCheckout() {
+                if (Object.keys(cart).length === 0) {
+                    alert("Your cart is empty. Please add documents first.");
+                    return;
+                }
 
-        // Show the checkout modal
-        $('#privacyPolicyModal').modal('show');
-    }
+                // Show the checkout modal
+                $('#privacyPolicyModal').modal('show');
+            }
 
-    // Handle Agree button click inside Privacy Policy Modal
-    document.getElementById("agreePrivacyPolicy").addEventListener("click", function() {
-        $('#privacyPolicyModal').modal('hide'); // Hide Privacy Policy Modal
-        $('#checkoutModal').modal('show'); // Show Checkout Modal
-    });
-
-    // Handle form submission
-    document.getElementById("checkoutForm").addEventListener("submit", function (e) {
-        e.preventDefault(); // Prevent default form submission
-
-        // Check if cart is empty
-        if (Object.keys(cart).length === 0) {
-            alert("Your cart is empty. Please add documents first.");
-            return;
-        }
-
-        // Prepare the documents array for submission
-        const documents = Object.entries(cart).map(([type, quantity]) => ({
-            document_type: type,
-            quantity: quantity,
-        }));
-
-    // Collect user information from the form
-    const formData = {
-        user_id: document.getElementById("user_id").value, // Add user_id here
-        name: document.getElementById("name").value,
-        contact: document.getElementById("contact").value,
-        email: document.getElementById("email").value,
-        year_level: document.getElementById("year_level").value,
-        program: document.getElementById("program").value,
-        documents: Object.entries(cart).map(([id, details]) => ({
-            document_type: id,
-            quantity: details.quantity,
-        })),
-    };
-
-
-    console.log("Form Data to be Sent:", formData); // Debugging: Check data before sending
-
-    // Submit data to the server
-    axios.post("/request-document", formData)
-        .then(response => {
-            alert(`Request submitted successfully. Your queue number is: ${response.data.queue_number}`);
-            location.reload(); // Reload the page after successful submission
-        })
-        .catch(error => {
-            console.error("Error submitting form:", error); // Log error for debugging
-            alert(`An error occurred: ${error.response ? error.response.data.message : error.message}`);
-        });
-    });
-
-
-    //Handle the conditional programs depending on their year Level
-
-    function updatePrograms() {
-            const yearLevel = document.getElementById("year_level").value; // Get the selected year level
-            const programSelect = document.getElementById("program"); // Get the program dropdown
-            programSelect.innerHTML = '<option value="" disabled selected>Select program</option>'; // Reset options
-
-            // Define programs based on year level
-            const programsByYearLevel = {
-                "1st year": [
-                    { value: "BS Accountancy", text: "BS Accountancy (BSA)" },
-                    { value: "BS Criminology", text: "BS Criminology (BSC)" },
-                    { value: "BS Office Administration", text: "BS Office Administration (BSOA)" },
-                    { value: "BS Psychology", text: "BS Psychology (BSP)" },
-                    { value: "Bachelor of Technical-Vocational Teacher Education", text: "Bachelor of Technical-Vocational Teacher Education (BTVTEd)" },
-                ],
-                "2nd year": [
-                    { value: "BS Accountancy", text: "BS Accountancy (BSA)" },
-                    { value: "BS Criminology", text: "BS Criminology (BSC)" },
-                    { value: "BS Office Administration", text: "BS Office Administration (BSOA)" },
-                    { value: "BS Psychology", text: "BS Psychology (BSP)" },
-                    { value: "Bachelor of Technical-Vocational Teacher Education", text: "Bachelor of Technical-Vocational Teacher Education (BTVTEd)" },
-                ],
-                "3rd year": [
-                    { value: "BS Accountancy", text: "BS Accountancy (BSA)" },
-                    { value: "BS Criminology", text: "BS Criminology (BSC)" },
-                    { value: "BS Office Administration", text: "BS Office Administration (BSOA)" },
-                    { value: "BS Psychology", text: "BS Psychology (BSP)" },
-                    { value: "Bachelor of Technical-Vocational Teacher Education", text: "Bachelor of Technical-Vocational Teacher Education (BTVTEd)" },
-                ],
-                "4th year": [
-                    { value: "BS Accountancy", text: "BS Accountancy (BSA)" },
-                    { value: "BS Criminology", text: "BS Criminology (BSC)" },
-                    { value: "BS Office Administration", text: "BS Office Administration (BSOA)" },
-                    { value: "BS Psychology", text: "BS Psychology (BSP)" },
-                    { value: "Bachelor of Technical-Vocational Teacher Education", text: "Bachelor of Technical-Vocational Teacher Education (BTVTEd)" },
-                ],
-                SHS: [
-                    { value: "GAS", text: "GAS" },
-                    { value: "HUMMS", text: "HUMMS" },
-                    { value: "ABM", text: "ABM" },
-                    { value: "STEM", text: "STEM" },
-                    { value: "ICT", text: "ICT" },
-                    { value: "HE", text: "HE" },
-                ],
-            };
-
-        // Populate the program dropdown with the relevant options
-        if (programsByYearLevel[yearLevel]) {
-            programsByYearLevel[yearLevel].forEach((program) => {
-                const option = document.createElement("option");
-                option.value = program.value;
-                option.textContent = program.text;
-                programSelect.appendChild(option);
+            // Handle Agree button click inside Privacy Policy Modal
+            document.getElementById("agreePrivacyPolicy").addEventListener("click", function() {
+                $('#privacyPolicyModal').modal('hide'); // Hide Privacy Policy Modal
+                $('#checkoutModal').modal('show'); // Show Checkout Modal
             });
-        }
-    }
 
-</script>
+            // Handle form submission
+            document.getElementById("checkoutForm").addEventListener("submit", function(e) {
+                e.preventDefault(); // Prevent default form submission
+
+                // Check if cart is empty
+                if (Object.keys(cart).length === 0) {
+                    alert("Your cart is empty. Please add documents first.");
+                    return;
+                }
+
+                // Prepare the documents array for submission
+                const documents = Object.entries(cart).map(([type, quantity]) => ({
+                    document_type: type,
+                    quantity: quantity,
+                }));
+
+                // Collect user information from the form
+                const formData = {
+                    user_id: document.getElementById("user_id").value, // Add user_id here
+                    name: document.getElementById("name").value,
+                    contact: document.getElementById("contact").value,
+                    email: document.getElementById("email").value,
+                    year_level: document.getElementById("year_level").value,
+                    program: document.getElementById("program").value,
+                    documents: Object.entries(cart).map(([id, details]) => ({
+                        document_type: id,
+                        quantity: details.quantity,
+                    })),
+                };
+
+
+                console.log("Form Data to be Sent:", formData); // Debugging: Check data before sending
+
+                // Submit data to the server
+                axios.post("/request-document", formData)
+                    .then(response => {
+                        Swal.fire({
+                            title: 'Request Submitted!',
+                            text: `Your queue number is: ${response.data.queue_number}`,
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            location.reload(); // Reload the page after the user acknowledges the alert
+                        });
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: `An error occurred: ${error.response ? error.response.data.message : error.message}`,
+                            icon: 'error',
+                            confirmButtonText: 'Try Again'
+                        });
+                        console.error("Error submitting form:", error); // Log error for debugging
+                    });
+            });
+
+
+            //Handle the conditional programs depending on their year Level
+
+            function updatePrograms() {
+                const yearLevel = document.getElementById("year_level").value; // Get the selected year level
+                const programSelect = document.getElementById("program"); // Get the program dropdown
+                programSelect.innerHTML = '<option value="" disabled selected>Select program</option>'; // Reset options
+
+                // Define programs based on year level
+                const programsByYearLevel = {
+                    "1st year": [{
+                            value: "BS Accountancy",
+                            text: "BS Accountancy (BSA)"
+                        },
+                        {
+                            value: "BS Criminology",
+                            text: "BS Criminology (BSC)"
+                        },
+                        {
+                            value: "BS Office Administration",
+                            text: "BS Office Administration (BSOA)"
+                        },
+                        {
+                            value: "BS Psychology",
+                            text: "BS Psychology (BSP)"
+                        },
+                        {
+                            value: "Bachelor of Technical-Vocational Teacher Education",
+                            text: "Bachelor of Technical-Vocational Teacher Education (BTVTEd)"
+                        },
+                    ],
+                    "2nd year": [{
+                            value: "BS Accountancy",
+                            text: "BS Accountancy (BSA)"
+                        },
+                        {
+                            value: "BS Criminology",
+                            text: "BS Criminology (BSC)"
+                        },
+                        {
+                            value: "BS Office Administration",
+                            text: "BS Office Administration (BSOA)"
+                        },
+                        {
+                            value: "BS Psychology",
+                            text: "BS Psychology (BSP)"
+                        },
+                        {
+                            value: "Bachelor of Technical-Vocational Teacher Education",
+                            text: "Bachelor of Technical-Vocational Teacher Education (BTVTEd)"
+                        },
+                    ],
+                    "3rd year": [{
+                            value: "BS Accountancy",
+                            text: "BS Accountancy (BSA)"
+                        },
+                        {
+                            value: "BS Criminology",
+                            text: "BS Criminology (BSC)"
+                        },
+                        {
+                            value: "BS Office Administration",
+                            text: "BS Office Administration (BSOA)"
+                        },
+                        {
+                            value: "BS Psychology",
+                            text: "BS Psychology (BSP)"
+                        },
+                        {
+                            value: "Bachelor of Technical-Vocational Teacher Education",
+                            text: "Bachelor of Technical-Vocational Teacher Education (BTVTEd)"
+                        },
+                    ],
+                    "4th year": [{
+                            value: "BS Accountancy",
+                            text: "BS Accountancy (BSA)"
+                        },
+                        {
+                            value: "BS Criminology",
+                            text: "BS Criminology (BSC)"
+                        },
+                        {
+                            value: "BS Office Administration",
+                            text: "BS Office Administration (BSOA)"
+                        },
+                        {
+                            value: "BS Psychology",
+                            text: "BS Psychology (BSP)"
+                        },
+                        {
+                            value: "Bachelor of Technical-Vocational Teacher Education",
+                            text: "Bachelor of Technical-Vocational Teacher Education (BTVTEd)"
+                        },
+                    ],
+                    SHS: [{
+                            value: "GAS",
+                            text: "GAS"
+                        },
+                        {
+                            value: "HUMMS",
+                            text: "HUMMS"
+                        },
+                        {
+                            value: "ABM",
+                            text: "ABM"
+                        },
+                        {
+                            value: "STEM",
+                            text: "STEM"
+                        },
+                        {
+                            value: "ICT",
+                            text: "ICT"
+                        },
+                        {
+                            value: "HE",
+                            text: "HE"
+                        },
+                    ],
+                };
+
+                // Populate the program dropdown with the relevant options
+                if (programsByYearLevel[yearLevel]) {
+                    programsByYearLevel[yearLevel].forEach((program) => {
+                        const option = document.createElement("option");
+                        option.value = program.value;
+                        option.textContent = program.text;
+                        programSelect.appendChild(option);
+                    });
+                }
+            }
+        </script>
 
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
