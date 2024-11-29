@@ -77,7 +77,10 @@ class RegistrarController extends Controller
             $document = Document::findOrFail($doc['document_type']);
 
             // Attach the document to the document request (no quantity for now)
-            $documentRequest->documents()->attach($document->id);
+            $documentRequest->documents()->attach($document->id, [
+                'quantity' => $doc['quantity'],
+                'price' => $doc['price'],
+            ]);
         }
 
 

@@ -458,6 +458,8 @@
                     quantity: quantity,
                 }));
 
+                console.log(cart);
+
                 // Collect user information from the form
                 const formData = {
                     user_id: document.getElementById("user_id").value, // Add user_id here
@@ -469,6 +471,7 @@
                     documents: Object.entries(cart).map(([id, details]) => ({
                         document_type: id,
                         quantity: details.quantity,
+                        price: details.totalPrice,
                     })),
                 };
 
