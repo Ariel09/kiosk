@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use PhpParser\Node\Expr\Cast;
 
 class DocumentRequest extends Model
 {
@@ -26,10 +27,18 @@ class DocumentRequest extends Model
         'payment_date',
         'remarks'
     ];
+    // protected function casts(): array
+    // {
+    //     return [
+    //         'amount' => 'amount',
+           
+    //     ];
+    // }
 
     /**
      * Get the user that owns the document request.
      */
+    
     public function user()
     {
         return $this->belongsTo(User::class);
