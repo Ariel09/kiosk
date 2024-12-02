@@ -44,6 +44,10 @@ return [
             'visibility' => 'public',
             'throw' => false,
         ],
+        'db_backups' => [
+            'driver' => 'local',
+            'root' => storage_path('app/db_backups'), // Adjust the directory as needed
+        ],
 
         's3' => [
             'driver' => 's3',
