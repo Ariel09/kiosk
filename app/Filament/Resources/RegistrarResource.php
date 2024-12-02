@@ -46,16 +46,20 @@ class RegistrarResource extends Resource
             ->columns([
                 TextColumn::make('queue_number')->label('Queue Number'),
                 TextColumn::make('user.student.full_name')
-                    ->label('Full Name')
-                    ->formatStateUsing(function ($record) {
-                        $student = $record->user?->student;
-
-                        if ($student) {
-                            return $student->full_name; // Access the accessor from the Student model
-                        }
-
-                        return 'N/A'; // Fallback if no student is associated
-                    }),
+                ->label('Full Name')
+                ->searchable(query: function ($query, $search) {
+                    return $query->whereHas('user.student', function ($subQuery) use ($search) {
+                        $subQuery->where(function ($q) use ($search) {
+                            $q->where('firstname', 'like', "%{$search}%")
+                              ->orWhere('lastname', 'like', "%{$search}%");
+                        });
+                    });
+                })
+                ->formatStateUsing(function ($record) {
+                    $student = $record->user?->student;
+            
+                    return $student ? $student->full_name : 'N/A'; // Use accessor or fallback
+                }),
                 TextColumn::make('amount')
                     ->label('Amount')
                     ->money('Php'), // Adjust the currency if needed

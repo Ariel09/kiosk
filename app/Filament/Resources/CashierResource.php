@@ -57,7 +57,7 @@ class CashierResource extends Resource
                                     'paid' => 'Paid',
                                     'decline' => 'Decline',
                                 ]),
-
+                                TextInput::make('amount'),
                             Select::make('documents')
                                 ->label('Documents')
                                 ->multiple()

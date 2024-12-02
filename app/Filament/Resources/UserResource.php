@@ -66,7 +66,7 @@ class UserResource extends Resource
                 $query->where('name', 'student');
             }))
             ->columns([
-                TextColumn::make('id')->sortable(),
+            TextColumn::make('id')->sortable(),
                 TextColumn::make('name')->sortable()->searchable(),
                 TextColumn::make('email')->sortable()->searchable(),
                 TextColumn::make('roles.name')  // Display user roles in the table
