@@ -192,6 +192,16 @@
                 font-size: 0.9rem;
                 padding: 8px 16px;
             }
+            @media (max-width: 768px) {
+    .cart-footer {
+        padding: 15px;
+    }
+
+    .cart-footer .btn {
+        font-size: 0.9rem;
+        padding: 10px 15px;
+    }
+}
 
             /* Further adjustment for smaller devices */
             .document-selection {
@@ -291,9 +301,9 @@
                     </div>
 
                     <div class="modal-body">
-                        <p>I hereby affirm that all information supplied herein is complete and accurate. Withholding or giving false information will make me ineligible for admission or subject to dismissal. If admitted, I agree to abide by the established guidelines of Pamantasan ng Cabuyao.</p>
+                        <p>I hereby affirm that all information supplied herein is complete and accurate. Withholding or giving false information will make me ineligible for admission or subject to dismissal. If admitted, I agree to abide by the established guidelines of St. Ignatius Academy.</p>
 
-                        <p> Further, I agree to collection and processing of my data for the purpose of processing request for school records at Pamantasan ng Cabuyao. I understand that my personal information is protected by RA 10173, Data Privacy Act of 2012, and that I am required to provide truthful information. I understand that my personal information shall not be shared or disclosed with other parties without consent unless the disclosure is required by, or in compliance with, applicable laws and regulations.</p>
+                        <p> Further, I agree to collection and processing of my data for the purpose of processing request for school records at St. Ignatius Academy. I understand that my personal information is protected by RA 10173, Data Privacy Act of 2012, and that I am required to provide truthful information. I understand that my personal information shall not be shared or disclosed with other parties without consent unless the disclosure is required by, or in compliance with, applicable laws and regulations.</p>
                     </div>
 
                     <div class="modal-footer">

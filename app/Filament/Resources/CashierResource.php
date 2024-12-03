@@ -57,12 +57,27 @@ class CashierResource extends Resource
                                     'paid' => 'Paid',
                                     'decline' => 'Decline',
                                 ]),
-                                TextInput::make('amount'),
+
                             Select::make('documents')
                                 ->label('Documents')
                                 ->multiple()
                                 ->options(Document::pluck('document_name', 'id')->toArray()) // List all documents
-                                ->default(fn($record) => $record->documents->pluck('id')->toArray()), // Preselect existing documents
+                                ->default(fn($record) => $record->documents->pluck('id')->toArray()) // Preselect existing documents
+                                ->reactive()
+                                ->afterStateUpdated(function ($state, callable $get, callable $set) {
+                                    // Calculate the total price of selected documents
+                                    $selectedDocuments = Document::whereIn('id', $state)->get();
+                                    $totalAmount = $selectedDocuments->sum('price');
+                                    
+                                    // Update the amount field
+                                    $set('amount', $totalAmount);
+                                }),
+
+                            TextInput::make('amount')
+                                ->label('Total Amount')
+                                ->default(fn($record) => $record->amount)
+                                ->numeric()
+                                ->disabled(), // Disable manual editing, reactive updates only
 
                             TextInput::make('remarks')
                                 ->label('Remarks')
